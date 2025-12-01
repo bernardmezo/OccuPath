@@ -12,11 +12,15 @@ Public Class Form5
     End Sub
 
     Private Sub btnStartTest_Click(sender As Object, e As EventArgs) Handles btnStartTest.Click
-        ' Open test form (Form2 or Form3)
-        MessageBox.Show("Memulai tes kepribadian...", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
-        ' TODO: Open Form2 or Form3 for the test
-        Dim testForm As New Form3()
-        testForm.ShowDialog()
+        ' Open Category A form (Data Diri)
+        Dim kategoriAForm As New FormKategoriA(userName)
+        Dim result = kategoriAForm.ShowDialog()
+        
+        If result = DialogResult.OK Then
+            ' Continue to next category or test
+            MessageBox.Show("Data kategori A berhasil disimpan. Lanjut ke kategori berikutnya...", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            ' TODO: Open next category form
+        End If
     End Sub
 
     Private Sub btnHistory_Click(sender As Object, e As EventArgs) Handles btnHistory.Click

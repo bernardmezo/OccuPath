@@ -1,25 +1,36 @@
-﻿Public Class Form2
+﻿Public Class FormKategoriB
+    Private userName As String
     Private currentQuestionIndex As Integer = 0
     Private totalQuestions As Integer = 10
     Private answers As New Dictionary(Of Integer, String)
-
-    ' TODO: Backend will fill this with actual questions
     Private questions As New List(Of QuestionData)
 
-    Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' TODO: Backend will load questions here
+    Public Sub New(username As String)
+        InitializeComponent()
+        Me.userName = username
+    End Sub
+
+    Private Sub FormKategoriB_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Backend will load questions here
         LoadQuestions()
         DisplayQuestion()
     End Sub
 
     Private Sub LoadQuestions()
-        ' TODO: Backend akan populate method ini dengan data real
-        ' Contoh implementasi untuk backend:
+        ' TODO: Backend populate method ini dengan pertanyaan real
+        ' Contoh:
         '
         ' questions.Add(New QuestionData With {
-        '     .QuestionText = "Apa warna favorit Anda?",
-        '     .Options = New List(Of String) From {"Merah", "Biru", "Hijau", "Kuning"}
+        '     .QuestionText = "IPK terakhir Anda?",
+        '     .Options = New List(Of String) From {"< 2.50", "2.50 – 2.99", "3.00 – 3.49", "3.50 – 4.00"}
         ' })
+        '
+        ' questions.Add(New QuestionData With {
+        '     .QuestionText = "Tren IPK Anda?",
+        '     .Options = New List(Of String) From {"Meningkat", "Stabil", "Menurun"}
+        ' })
+        '
+        ' ... tambah 10 pertanyaan total
         '
         ' Backend: isi questions list di sini
     End Sub
@@ -68,8 +79,9 @@
 
         ' Check if last question
         If currentQuestionIndex = totalQuestions - 1 Then
-            ' TODO: Backend will process answers here
-            MessageBox.Show("Survey selesai! Data akan diproses.", "Selesai", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            ' TODO: Backend save answers here
+            MessageBox.Show("Data Kategori B berhasil disimpan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Me.DialogResult = DialogResult.OK
             Me.Close()
         Else
             ' Go to next question
@@ -82,6 +94,22 @@
         If currentQuestionIndex > 0 Then
             currentQuestionIndex -= 1
             DisplayQuestion()
+        End If
+    End Sub
+
+    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+        Dim result = MessageBox.Show("Apakah Anda yakin ingin membatalkan? Data tidak akan disimpan.", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        If result = DialogResult.Yes Then
+            Me.DialogResult = DialogResult.Cancel
+            Me.Close()
+        End If
+    End Sub
+
+    Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
+        Dim result = MessageBox.Show("Kembali ke Kategori A? Data yang sudah diisi tidak akan disimpan.", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        If result = DialogResult.Yes Then
+            Me.DialogResult = DialogResult.Retry
+            Me.Close()
         End If
     End Sub
 

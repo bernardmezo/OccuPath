@@ -1,25 +1,36 @@
-﻿Public Class Form2
+Public Class FormKategoriA
+    Private userName As String
     Private currentQuestionIndex As Integer = 0
     Private totalQuestions As Integer = 10
     Private answers As New Dictionary(Of Integer, String)
-
-    ' TODO: Backend will fill this with actual questions
     Private questions As New List(Of QuestionData)
 
-    Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' TODO: Backend will load questions here
+    Public Sub New(username As String)
+        InitializeComponent()
+        Me.userName = username
+    End Sub
+
+    Private Sub FormKategoriA_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Backend will load questions here
         LoadQuestions()
         DisplayQuestion()
     End Sub
 
     Private Sub LoadQuestions()
-        ' TODO: Backend akan populate method ini dengan data real
-        ' Contoh implementasi untuk backend:
+        ' TODO: Backend populate method ini dengan pertanyaan real
+        ' Contoh:
         '
         ' questions.Add(New QuestionData With {
-        '     .QuestionText = "Apa warna favorit Anda?",
-        '     .Options = New List(Of String) From {"Merah", "Biru", "Hijau", "Kuning"}
+        '     .QuestionText = "Jenis kelamin Anda?",
+        '     .Options = New List(Of String) From {"Laki-laki", "Perempuan"}
         ' })
+        '
+        ' questions.Add(New QuestionData With {
+        '     .QuestionText = "Status pendidikan saat ini?",
+        '     .Options = New List(Of String) From {"Aktif", "Non-aktif", "Cuti"}
+        ' })
+        '
+        ' ... tambah 10 pertanyaan total
         '
         ' Backend: isi questions list di sini
     End Sub
@@ -52,7 +63,7 @@
 
             ' Update button states
             btnPrevious.Enabled = (currentQuestionIndex > 0)
-            btnNext.Text = If(currentQuestionIndex = totalQuestions - 1, "Selesai", "Selanjutnya →")
+            btnNext.Text = If(currentQuestionIndex = totalQuestions - 1, "Lanjut ke Kategori B ?", "Selanjutnya ?")
         End If
     End Sub
 
@@ -68,9 +79,20 @@
 
         ' Check if last question
         If currentQuestionIndex = totalQuestions - 1 Then
-            ' TODO: Backend will process answers here
-            MessageBox.Show("Survey selesai! Data akan diproses.", "Selesai", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Me.Close()
+            ' TODO: Backend save answers here
+            MessageBox.Show("Data Kategori A berhasil disimpan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            ' Open Category B form
+            Dim kategoriBForm As New FormKategoriB(userName)
+            Me.Hide()
+            Dim result = kategoriBForm.ShowDialog()
+
+            If result = DialogResult.Retry Then
+                Me.Show()
+            Else
+                Me.DialogResult = DialogResult.OK
+                Me.Close()
+            End If
         Else
             ' Go to next question
             currentQuestionIndex += 1
@@ -82,6 +104,14 @@
         If currentQuestionIndex > 0 Then
             currentQuestionIndex -= 1
             DisplayQuestion()
+        End If
+    End Sub
+
+    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+        Dim result = MessageBox.Show("Apakah Anda yakin ingin membatalkan? Data tidak akan disimpan.", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        If result = DialogResult.Yes Then
+            Me.DialogResult = DialogResult.Cancel
+            Me.Close()
         End If
     End Sub
 

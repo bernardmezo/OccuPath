@@ -13,4 +13,8 @@
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Initialization code if needed
     End Sub
+
+    Private Sub lblFooter_Click(sender As Object, e As EventArgs) Handles lblFooter.Click
+
+    End Sub
 End Class

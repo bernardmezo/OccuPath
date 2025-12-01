@@ -1,7 +1,8 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
-Partial Class Form2
+Partial Class FormKategoriB
     Inherits System.Windows.Forms.Form
 
+    'Form overrides dispose to clean up the component list.
     <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
@@ -13,18 +14,25 @@ Partial Class Form2
         End Try
     End Sub
 
+    'Required by the Windows Form Designer
     Private components As System.ComponentModel.IContainer
 
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.  
+    'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         panelAccent = New Panel()
         lblProgress = New Label()
+        lblTitle = New Label()
         lblQuestion = New Label()
         panelAnswer = New Panel()
         lblInstruction = New Label()
         cboAnswer = New ComboBox()
+        btnBack = New Button()
         btnPrevious = New Button()
         btnNext = New Button()
+        btnCancel = New Button()
         panelAnswer.SuspendLayout()
         SuspendLayout()
         ' 
@@ -39,22 +47,33 @@ Partial Class Form2
         ' lblProgress
         ' 
         lblProgress.AutoSize = True
-        lblProgress.Font = New Font("Segoe UI", 11F)
+        lblProgress.Font = New Font("Segoe UI", 11.0F)
         lblProgress.ForeColor = Color.FromArgb(CByte(127), CByte(140), CByte(141))
-        lblProgress.Location = New Point(40, 40)
+        lblProgress.Location = New Point(40, 30)
         lblProgress.Name = "lblProgress"
-        lblProgress.Size = New Size(114, 20)
+        lblProgress.Size = New Size(123, 20)
         lblProgress.TabIndex = 1
-        lblProgress.Text = "Pertanyaan 1 / ?"
+        lblProgress.Text = "Pertanyaan 1 / 10"
+        ' 
+        ' lblTitle
+        ' 
+        lblTitle.AutoSize = True
+        lblTitle.Font = New Font("Segoe UI", 14.0F, FontStyle.Bold)
+        lblTitle.ForeColor = Color.FromArgb(CByte(44), CByte(62), CByte(80))
+        lblTitle.Location = New Point(40, 60)
+        lblTitle.Name = "lblTitle"
+        lblTitle.Size = New Size(300, 25)
+        lblTitle.TabIndex = 2
+        lblTitle.Text = "KATEGORI B — DATA AKADEMIS"
         ' 
         ' lblQuestion
         ' 
-        lblQuestion.Font = New Font("Segoe UI", 16F, FontStyle.Bold)
+        lblQuestion.Font = New Font("Segoe UI", 16.0F, FontStyle.Bold)
         lblQuestion.ForeColor = Color.FromArgb(CByte(44), CByte(62), CByte(80))
-        lblQuestion.Location = New Point(40, 80)
+        lblQuestion.Location = New Point(40, 110)
         lblQuestion.Name = "lblQuestion"
         lblQuestion.Size = New Size(620, 120)
-        lblQuestion.TabIndex = 2
+        lblQuestion.TabIndex = 3
         lblQuestion.Text = "[Pertanyaan]"
         ' 
         ' panelAnswer
@@ -63,15 +82,15 @@ Partial Class Form2
         panelAnswer.BorderStyle = BorderStyle.FixedSingle
         panelAnswer.Controls.Add(lblInstruction)
         panelAnswer.Controls.Add(cboAnswer)
-        panelAnswer.Location = New Point(40, 230)
+        panelAnswer.Location = New Point(40, 260)
         panelAnswer.Name = "panelAnswer"
         panelAnswer.Size = New Size(620, 130)
-        panelAnswer.TabIndex = 3
+        panelAnswer.TabIndex = 4
         ' 
         ' lblInstruction
         ' 
         lblInstruction.AutoSize = True
-        lblInstruction.Font = New Font("Segoe UI", 10F)
+        lblInstruction.Font = New Font("Segoe UI", 10.0F)
         lblInstruction.ForeColor = Color.FromArgb(CByte(127), CByte(140), CByte(141))
         lblInstruction.Location = New Point(25, 25)
         lblInstruction.Name = "lblInstruction"
@@ -82,24 +101,38 @@ Partial Class Form2
         ' cboAnswer
         ' 
         cboAnswer.DropDownStyle = ComboBoxStyle.DropDownList
-        cboAnswer.Font = New Font("Segoe UI", 11F)
+        cboAnswer.Font = New Font("Segoe UI", 11.0F)
         cboAnswer.FormattingEnabled = True
         cboAnswer.Location = New Point(25, 55)
         cboAnswer.Name = "cboAnswer"
         cboAnswer.Size = New Size(565, 28)
         cboAnswer.TabIndex = 1
         ' 
+        ' btnBack
+        ' 
+        btnBack.BackColor = Color.White
+        btnBack.FlatAppearance.BorderColor = Color.FromArgb(CByte(189), CByte(195), CByte(199))
+        btnBack.FlatStyle = FlatStyle.Flat
+        btnBack.Font = New Font("Segoe UI", 10.0F)
+        btnBack.ForeColor = Color.FromArgb(CByte(127), CByte(140), CByte(141))
+        btnBack.Location = New Point(40, 470)
+        btnBack.Name = "btnBack"
+        btnBack.Size = New Size(140, 40)
+        btnBack.TabIndex = 5
+        btnBack.Text = "← Kategori A"
+        btnBack.UseVisualStyleBackColor = False
+        ' 
         ' btnPrevious
         ' 
         btnPrevious.BackColor = Color.White
         btnPrevious.FlatAppearance.BorderColor = Color.FromArgb(CByte(189), CByte(195), CByte(199))
         btnPrevious.FlatStyle = FlatStyle.Flat
-        btnPrevious.Font = New Font("Segoe UI", 11F)
+        btnPrevious.Font = New Font("Segoe UI", 11.0F)
         btnPrevious.ForeColor = Color.FromArgb(CByte(52), CByte(73), CByte(94))
-        btnPrevious.Location = New Point(40, 400)
+        btnPrevious.Location = New Point(40, 415)
         btnPrevious.Name = "btnPrevious"
         btnPrevious.Size = New Size(150, 45)
-        btnPrevious.TabIndex = 4
+        btnPrevious.TabIndex = 6
         btnPrevious.Text = "← Sebelumnya"
         btnPrevious.UseVisualStyleBackColor = False
         ' 
@@ -108,32 +141,49 @@ Partial Class Form2
         btnNext.BackColor = Color.FromArgb(CByte(41), CByte(128), CByte(185))
         btnNext.FlatAppearance.BorderSize = 0
         btnNext.FlatStyle = FlatStyle.Flat
-        btnNext.Font = New Font("Segoe UI", 11F)
+        btnNext.Font = New Font("Segoe UI", 11.0F)
         btnNext.ForeColor = Color.White
-        btnNext.Location = New Point(510, 400)
+        btnNext.Location = New Point(510, 415)
         btnNext.Name = "btnNext"
         btnNext.Size = New Size(150, 45)
-        btnNext.TabIndex = 5
+        btnNext.TabIndex = 7
         btnNext.Text = "Selanjutnya →"
         btnNext.UseVisualStyleBackColor = False
         ' 
-        ' Form2
+        ' btnCancel
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        btnCancel.BackColor = Color.White
+        btnCancel.FlatAppearance.BorderColor = Color.FromArgb(CByte(189), CByte(195), CByte(199))
+        btnCancel.FlatStyle = FlatStyle.Flat
+        btnCancel.Font = New Font("Segoe UI", 10.0F)
+        btnCancel.ForeColor = Color.FromArgb(CByte(127), CByte(140), CByte(141))
+        btnCancel.Location = New Point(275, 415)
+        btnCancel.Name = "btnCancel"
+        btnCancel.Size = New Size(150, 45)
+        btnCancel.TabIndex = 8
+        btnCancel.Text = "Batal"
+        btnCancel.UseVisualStyleBackColor = False
+        ' 
+        ' FormKategoriB
+        ' 
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.FromArgb(CByte(245), CByte(246), CByte(247))
-        ClientSize = New Size(700, 500)
+        ClientSize = New Size(700, 540)
+        Controls.Add(btnCancel)
         Controls.Add(btnNext)
         Controls.Add(btnPrevious)
+        Controls.Add(btnBack)
         Controls.Add(panelAnswer)
         Controls.Add(lblQuestion)
+        Controls.Add(lblTitle)
         Controls.Add(lblProgress)
         Controls.Add(panelAccent)
         FormBorderStyle = FormBorderStyle.FixedSingle
         MaximizeBox = False
-        Name = "Form2"
+        Name = "FormKategoriB"
         StartPosition = FormStartPosition.CenterScreen
-        Text = "OccuPath - Survey"
+        Text = "OccuPath - Data Akademis"
         panelAnswer.ResumeLayout(False)
         panelAnswer.PerformLayout()
         ResumeLayout(False)
@@ -143,10 +193,13 @@ Partial Class Form2
 
     Friend WithEvents panelAccent As Panel
     Friend WithEvents lblProgress As Label
+    Friend WithEvents lblTitle As Label
     Friend WithEvents lblQuestion As Label
     Friend WithEvents panelAnswer As Panel
     Friend WithEvents lblInstruction As Label
     Friend WithEvents cboAnswer As ComboBox
+    Friend WithEvents btnBack As Button
     Friend WithEvents btnPrevious As Button
     Friend WithEvents btnNext As Button
+    Friend WithEvents btnCancel As Button
 End Class
