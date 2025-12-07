@@ -12,6 +12,13 @@
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Initialization code if needed
+        ' Test Database Connection on Startup
+        If DatabaseConnection.TestConnection() Then
+            ' Optional: Silent success or log to console
+            Console.WriteLine("Database connected successfully.")
+        Else
+            MessageBox.Show("Gagal terhubung ke database. Pastikan XAMPP/MySQL aktif.", "Peringatan Koneksi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
     End Sub
 
     Private Sub lblFooter_Click(sender As Object, e As EventArgs) Handles lblFooter.Click

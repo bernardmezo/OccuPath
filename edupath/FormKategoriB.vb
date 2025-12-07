@@ -79,10 +79,17 @@
 
         ' Check if last question
         If currentQuestionIndex = totalQuestions - 1 Then
-            ' TODO: Backend save answers here
-            MessageBox.Show("Data Kategori B berhasil disimpan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Me.DialogResult = DialogResult.OK
-            Me.Close()
+            Try
+                ' Save data to Database (MySQL)
+                DatabaseConnection.SaveUserProfile(UserProfile.Current)
+
+                MessageBox.Show("Data berhasil disimpan ke database!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Me.DialogResult = DialogResult.OK
+                Me.Close()
+
+            Catch ex As Exception
+                MessageBox.Show("Gagal menyimpan data: " & ex.Message, "Error Database", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
         Else
             ' Go to next question
             currentQuestionIndex += 1

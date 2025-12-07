@@ -1,4 +1,16 @@
-﻿Public Class Form4
+﻿' ============================================
+' Form4: Login & Register Form
+' Menggunakan 3-Layer Architecture
+' ============================================
+
+Imports OccuPath.Services
+Imports OccuPath.Core
+Imports OccuPath.Data
+
+Public Class Form4
+    ' Service layer instance
+    Private ReadOnly _authService As New AuthService()
+
     Private Sub btnLogin_Click(sender As Object, e As EventArgs) Handles btnLogin.Click
         ' Validate login fields
         If String.IsNullOrWhiteSpace(txtLoginUsername.Text) Then
@@ -13,19 +25,33 @@
             Return
         End If
 
-        ' TODO: Add actual authentication logic here
-        ' For now, just accept any credentials and proceed to menu
+        ' Authenticate using AuthService
+        Dim result = _authService.Login(txtLoginUsername.Text.Trim(), txtLoginPassword.Text)
 
-        ' Close this form and open main menu
-        Me.DialogResult = DialogResult.OK
-        Me.Hide()
+        If result.Success Then
+            ' SessionManager sudah di-set oleh AuthService.Login()
+            ' Untuk backward compatibility, set juga UserProfile lama
+            UserProfile.Current.UserID = result.User.Id
+            UserProfile.Current.Username = result.User.Username
+            UserProfile.Current.NamaLengkap = result.User.NamaLengkap
 
-        ' Open main menu (Form5) with username
-        Dim menuForm As New Form5(txtLoginUsername.Text)
-        menuForm.ShowDialog()
+            MessageBox.Show($"Selamat datang, {result.User.NamaLengkap}!", "Login Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-        ' Close login form after menu closes
-        Me.Close()
+            ' Close this form and open main menu
+            Me.DialogResult = DialogResult.OK
+            Me.Hide()
+
+            ' Open main menu (Form5) with nama lengkap
+            Dim menuForm As New Form5(result.User.NamaLengkap)
+            menuForm.ShowDialog()
+
+            ' Close login form after menu closes
+            Me.Close()
+        Else
+            MessageBox.Show(result.Message, "Login Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            txtLoginPassword.Clear()
+            txtLoginPassword.Focus()
+        End If
     End Sub
 
     Private Sub btnRegister_Click(sender As Object, e As EventArgs) Handles btnRegister.Click
@@ -38,6 +64,20 @@
 
         If String.IsNullOrWhiteSpace(txtRegUsername.Text) Then
             MessageBox.Show("Username tidak boleh kosong!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            txtRegUsername.Focus()
+            Return
+        End If
+
+        ' Validate username length
+        If txtRegUsername.Text.Length < AppConstants.MIN_USERNAME_LENGTH Then
+            MessageBox.Show($"Username minimal {AppConstants.MIN_USERNAME_LENGTH} karakter!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            txtRegUsername.Focus()
+            Return
+        End If
+
+        ' Validate username (no spaces, alphanumeric only)
+        If txtRegUsername.Text.Contains(" ") Then
+            MessageBox.Show("Username tidak boleh mengandung spasi!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             txtRegUsername.Focus()
             Return
         End If
@@ -61,8 +101,8 @@
             Return
         End If
 
-        If txtRegPassword.Text.Length < 6 Then
-            MessageBox.Show("Password minimal 6 karakter!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        If txtRegPassword.Text.Length < AppConstants.MIN_PASSWORD_LENGTH Then
+            MessageBox.Show($"Password minimal {AppConstants.MIN_PASSWORD_LENGTH} karakter!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             txtRegPassword.Focus()
             Return
         End If
@@ -73,22 +113,33 @@
             Return
         End If
 
-        ' TODO: Add actual registration logic here
-        MessageBox.Show("Registrasi berhasil! Silakan login dengan akun Anda.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        ' Register using AuthService
+        Dim result = _authService.Register(
+            txtRegUsername.Text.Trim(),
+            txtRegPassword.Text,
+            txtRegName.Text.Trim(),
+            txtRegEmail.Text.Trim()
+        )
 
-        ' Copy username to login tab
-        txtLoginUsername.Text = txtRegUsername.Text
+        If result.Success Then
+            MessageBox.Show(AppConstants.Messages.REGISTER_SUCCESS, "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-        ' Clear register fields
-        txtRegName.Clear()
-        txtRegUsername.Clear()
-        txtRegEmail.Clear()
-        txtRegPassword.Clear()
-        txtRegConfirmPassword.Clear()
+            ' Copy username to login tab
+            txtLoginUsername.Text = txtRegUsername.Text.Trim()
 
-        ' Switch to login tab
-        tabControl.SelectedTab = tabLogin
-        txtLoginPassword.Focus()
+            ' Clear register fields
+            txtRegName.Clear()
+            txtRegUsername.Clear()
+            txtRegEmail.Clear()
+            txtRegPassword.Clear()
+            txtRegConfirmPassword.Clear()
+
+            ' Switch to login tab
+            tabControl.SelectedTab = tabLogin
+            txtLoginPassword.Focus()
+        Else
+            MessageBox.Show(result.Message, "Registrasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End If
     End Sub
 
     Private Sub linkForgotPassword_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles linkForgotPassword.LinkClicked
@@ -96,6 +147,15 @@
     End Sub
 
     Private Sub Form4_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Test database connection on load using DbContext
+        Dim dbContext As New DbContext()
+        If Not dbContext.TestConnection() Then
+            MessageBox.Show(AppConstants.Messages.DB_CONNECTION_ERROR, "Error Koneksi", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End If
+
+        ' Set form title
+        Me.Text = $"{AppConstants.APP_NAME} - Login"
+
         ' Set initial focus
         txtLoginUsername.Focus()
     End Sub
