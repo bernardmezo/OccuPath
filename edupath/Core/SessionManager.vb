@@ -102,5 +102,12 @@ Namespace Core
                 _studentProfile = New StudentProfile()
             End If
         End Sub
+
+        ''' <summary>
+        ''' Clear session (alias untuk Logout)
+        ''' </summary>
+        Public Shared Sub ClearSession()
+            Logout()
+        End Sub
     End Class
 End Namespace

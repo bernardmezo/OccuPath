@@ -5,6 +5,7 @@
 
 Imports MySql.Data.MySqlClient
 Imports OccuPath.Models
+Imports QuestionOpt = OccuPath.Models.QuestionOption
 
 Namespace Data
     Public Class QuestionRepository
@@ -42,19 +43,21 @@ Namespace Data
                                     .Kategori = kategori,
                                     .Text = reader.GetString("question_text"),
                                     .Order = reader.GetInt32("question_order"),
-                                    .Options = New List(Of QuestionOption)()
+                                    .DisplayOrder = reader.GetInt32("question_order"),
+                                    .Options = New List(Of Models.QuestionOption)()
                                 }
                                 result.Add(currentQuestion)
                                 currentCode = code
                             End If
 
                             ' Tambahkan opsi ke pertanyaan saat ini
-                            currentQuestion.Options.Add(New QuestionOption() With {
+                            currentQuestion.Options.Add(New Models.QuestionOption() With {
                                 .Id = reader.GetInt32("id_option"),
                                 .QuestionCode = code,
                                 .Text = reader.GetString("option_text"),
                                 .Value = reader.GetInt32("option_value"),
-                                .Order = reader.GetInt32("option_order")
+                                .Order = reader.GetInt32("option_order"),
+                                .DisplayOrder = reader.GetInt32("option_order")
                             })
                         End While
                     End Using

@@ -39,7 +39,7 @@ Namespace Services
         ''' <summary>
         ''' Menyimpan jawaban Kategori A ke StudentProfile
         ''' </summary>
-        Public Sub SaveKategoriAAnswers(userId As Integer, answers As Dictionary(Of String, QuestionOption))
+        Public Sub SaveKategoriAAnswers(userId As Integer, answers As Dictionary(Of String, Models.QuestionOption))
             Dim profile As New StudentProfile() With {
                 .UserId = userId
             }

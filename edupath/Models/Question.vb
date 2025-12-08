@@ -12,7 +12,9 @@ Namespace Models
         Public Property Code As String              ' F_A1, F_B1, F_C56, etc.
         Public Property Kategori As String          ' A, B, C
         Public Property Text As String              ' Teks pertanyaan
-        Public Property Order As Integer            ' Urutan tampil
+        Public Property QuestionType As String      ' scale, choice, numeric
+        Public Property DisplayOrder As Integer     ' Urutan tampil
+        Public Property Order As Integer            ' Alias untuk DisplayOrder (backward compatibility)
         Public Property IsActive As Boolean = True
         Public Property Options As List(Of QuestionOption)
 
@@ -20,11 +22,12 @@ Namespace Models
             Options = New List(Of QuestionOption)()
         End Sub
 
-        Public Sub New(code As String, text As String, kategori As String, order As Integer)
+        Public Sub New(code As String, text As String, kategori As String, questionType As String, displayOrder As Integer)
             Me.Code = code
             Me.Text = text
             Me.Kategori = kategori
-            Me.Order = order
+            Me.QuestionType = questionType
+            Me.DisplayOrder = displayOrder
             Me.Options = New List(Of QuestionOption)()
         End Sub
     End Class
@@ -37,7 +40,8 @@ Namespace Models
         Public Property QuestionCode As String
         Public Property Text As String              ' Teks yang ditampilkan
         Public Property Value As Integer            ' Nilai untuk perhitungan
-        Public Property Order As Integer            ' Urutan tampil
+        Public Property DisplayOrder As Integer     ' Urutan tampil
+        Public Property Order As Integer            ' Alias untuk DisplayOrder (backward compatibility)
 
         Public Sub New()
         End Sub

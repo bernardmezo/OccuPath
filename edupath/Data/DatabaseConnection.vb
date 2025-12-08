@@ -20,15 +20,25 @@ Public Module DatabaseConnection
     End Class
 
     Public Class QuestionOption
+        Public Property Id As Integer
+        Public Property QuestionCode As String
         Public Property Text As String
         Public Property Value As Integer
+        Public Property DisplayOrder As Integer
+        Public Property Order As Integer
+
+        Public Overrides Function ToString() As String
+            Return Text
+        End Function
     End Class
 
     ''' <summary>
     ''' Membentuk Connection String untuk MySQL.
     ''' </summary>
     Private Function GetConnectionString() As String
-        Return $"Server={DB_SERVER};Database={DB_NAME};Uid={DB_USER};Pwd={DB_PASS};"
+        ' Connection string dengan konfigurasi lengkap untuk compatibility
+        ' Jika error "Requested value 'None' was not found", coba ganti SslMode=Preferred atau hapus parameter SslMode
+        Return $"Server={DB_SERVER};Port=3306;Database={DB_NAME};Uid={DB_USER};Pwd={DB_PASS};AllowPublicKeyRetrieval=True;CharSet=utf8;"
     End Function
 
     ''' <summary>

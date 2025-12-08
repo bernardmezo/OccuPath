@@ -37,15 +37,15 @@ Public Class Form4
 
             MessageBox.Show($"Selamat datang, {result.User.NamaLengkap}!", "Login Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-            ' Close this form and open main menu
+            ' Close this form and open dashboard
             Me.DialogResult = DialogResult.OK
             Me.Hide()
 
-            ' Open main menu (Form5) with nama lengkap
-            Dim menuForm As New Form5(result.User.NamaLengkap)
-            menuForm.ShowDialog()
+            ' Open dashboard with userId and username
+            Dim dashboardForm As New FormDashboard(result.User.Id, result.User.NamaLengkap)
+            dashboardForm.ShowDialog()
 
-            ' Close login form after menu closes
+            ' Close login form after dashboard closes
             Me.Close()
         Else
             MessageBox.Show(result.Message, "Login Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error)
