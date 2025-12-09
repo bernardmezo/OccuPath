@@ -62,9 +62,15 @@ Public Class FormKategoriA
     Private Sub DisplayQuestion()
         If currentQuestionIndex >= 0 AndAlso currentQuestionIndex < questions.Count Then
             Dim currentQ = questions(currentQuestionIndex)
-            
-            ' Update UI
+
+            ' Update Progress Label
             lblProgress.Text = $"Pertanyaan {currentQuestionIndex + 1} / {questions.Count}"
+
+            ' Update Progress Bar based on ANSWERED questions (not current index)
+            progressBar.Maximum = questions.Count
+            progressBar.Value = answers.Count
+
+            ' Update Question Text
             lblQuestion.Text = currentQ.QuestionText
 
             ' Setup ComboBox Data Binding
@@ -89,7 +95,11 @@ Public Class FormKategoriA
 
             ' Update buttons
             btnPrevious.Enabled = (currentQuestionIndex > 0)
-            btnNext.Text = If(currentQuestionIndex = questions.Count - 1, "Selesai & Lanjut", "Selanjutnya ?")
+            If currentQuestionIndex = questions.Count - 1 Then
+                btnNext.Text = "Selesai & Lanjut >"
+            Else
+                btnNext.Text = "Selanjutnya >"
+            End If
         End If
     End Sub
 
@@ -117,7 +127,7 @@ Public Class FormKategoriA
         Try
             ' Build answer dictionary dengan question code sebagai key
             Dim answersWithCode As New Dictionary(Of String, OccuPath.Models.QuestionOption)()
-            
+
             For i = 0 To questions.Count - 1
                 If answers.ContainsKey(i) Then
                     Dim code = questions(i).QuestionCode
@@ -148,8 +158,8 @@ Public Class FormKategoriA
             If answers.ContainsKey(8) Then profile.F_A9_MetodeBelajar = answers(8).Text
             If answers.ContainsKey(9) Then profile.F_A10_MotivasiBelajar = answers(9).Value
 
-            MessageBox.Show(AppConstants.Messages.SAVE_SUCCESS & vbCrLf & 
-                          "Lanjutkan ke Kategori B - Data Akademis.", 
+            MessageBox.Show(AppConstants.Messages.SAVE_SUCCESS & vbCrLf &
+                          "Lanjutkan ke Kategori B - Data Akademis.",
                           "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
             Dim frmB As New FormKategoriB(userName)

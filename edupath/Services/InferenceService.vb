@@ -204,7 +204,7 @@ Namespace Services
 
             Using conn = DatabaseConnection.GetConnection()
                 conn.Open()
-                Dim sql = "SELECT id, nama_profil, deskripsi, skills_required FROM profil_lulusan"
+                Dim sql = "SELECT id_profil AS id, nama_profil, deskripsi, kompetensi_utama AS skills_required FROM profil_lulusan"
                 Using cmd As New MySqlCommand(sql, conn)
                     Using reader = cmd.ExecuteReader()
                         While reader.Read()
@@ -232,7 +232,7 @@ Namespace Services
                 conn.Open()
 
                 ' Ambil semua rules
-                Dim sqlRules = "SELECT id, rule_code, profil_lulusan_id, cf_rule, description FROM rules WHERE is_active = TRUE"
+                Dim sqlRules = "SELECT id_rule AS id, kode_rule AS rule_code, profil_lulusan_id, cf_rule, deskripsi AS description FROM rules WHERE is_active = TRUE"
                 Using cmdRules As New MySqlCommand(sqlRules, conn)
                     Using readerRules = cmdRules.ExecuteReader()
                         While readerRules.Read()

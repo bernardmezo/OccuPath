@@ -37,8 +37,12 @@
 
     Private Sub DisplayQuestion()
         If currentQuestionIndex >= 0 AndAlso currentQuestionIndex < questions.Count Then
-            ' Update progress
+            ' Update Progress Label
             lblProgress.Text = $"Pertanyaan {currentQuestionIndex + 1} / {totalQuestions}"
+
+            ' Update Progress Bar based on ANSWERED questions (not current index)
+            progressBar.Maximum = totalQuestions
+            progressBar.Value = answers.Count
 
             ' Display question
             Dim currentQ = questions(currentQuestionIndex)
@@ -63,7 +67,11 @@
 
             ' Update button states
             btnPrevious.Enabled = (currentQuestionIndex > 0)
-            btnNext.Text = If(currentQuestionIndex = totalQuestions - 1, "Selesai", "Selanjutnya →")
+            If currentQuestionIndex = totalQuestions - 1 Then
+                btnNext.Text = "Selesai >"
+            Else
+                btnNext.Text = "Selanjutnya >"
+            End If
         End If
     End Sub
 
@@ -79,6 +87,13 @@
 
         ' Check if last question
         If currentQuestionIndex = totalQuestions - 1 Then
+            ' Final validation: Check if ALL questions are answered
+            If answers.Count < totalQuestions Then
+                MessageBox.Show($"Silakan jawab semua pertanyaan! ({answers.Count}/{totalQuestions} terjawab)",
+                               "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+
             Try
                 ' Save data to Database (MySQL)
                 DatabaseConnection.SaveUserProfile(UserProfile.Current)

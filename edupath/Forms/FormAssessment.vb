@@ -28,6 +28,23 @@ Public Class FormAssessment
 
     Private Sub FormAssessment_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Try
+            ' Add button hover effects
+            AddHandler btnNext.MouseEnter, Sub(s, ev)
+                                               btnNext.BackColor = Color.FromArgb(52, 152, 219)
+                                           End Sub
+            AddHandler btnNext.MouseLeave, Sub(s, ev)
+                                               btnNext.BackColor = Color.FromArgb(41, 128, 185)
+                                           End Sub
+
+            AddHandler btnPrevious.MouseEnter, Sub(s, ev)
+                                                   If btnPrevious.Enabled Then
+                                                       btnPrevious.BackColor = Color.FromArgb(236, 240, 241)
+                                                   End If
+                                               End Sub
+            AddHandler btnPrevious.MouseLeave, Sub(s, ev)
+                                                   btnPrevious.BackColor = Color.White
+                                               End Sub
+
             LoadQuestions()
             ShowPage(_currentPage)
         Catch ex As Exception
@@ -105,54 +122,88 @@ Public Class FormAssessment
     Private Sub ShowPage(pageNumber As Integer)
         panelQuestions.Controls.Clear()
 
+        ' Update page title and description with icons
         Select Case pageNumber
             Case 1
-                lblPageTitle.Text = "Kategori A: Data Diri"
-                lblPageDescription.Text = "Silakan isi data diri Anda dengan lengkap"
+                lblPageTitle.Text = "?? Kategori A: Data Diri"
+                lblPageDescription.Text = "Silakan isi data diri Anda dengan lengkap dan akurat"
                 RenderQuestions(_questionsKategoriA, _personalData)
             Case 2
-                lblPageTitle.Text = "Kategori B: Data Akademis"
+                lblPageTitle.Text = "?? Kategori B: Data Akademis"
                 lblPageDescription.Text = "Informasi tentang prestasi akademik dan kemampuan teknis Anda"
                 RenderQuestions(_questionsKategoriB, _akademisData)
             Case 3
-                lblPageTitle.Text = "Kategori C: Karakter & Minat"
+                lblPageTitle.Text = "?? Kategori C: Karakter & Minat"
                 lblPageDescription.Text = "Penilaian karakter pribadi dan minat karir Anda (Skala 1-5)"
                 RenderQuestions(_questionsKategoriC, _karakterData)
         End Select
 
-        ' Update navigation buttons
+        ' Update navigation buttons with hover effects
         btnPrevious.Enabled = (pageNumber > 1)
-        btnNext.Text = If(pageNumber = _totalPages, "Selesai", "Lanjut")
+        If pageNumber = _totalPages Then
+            btnNext.Text = "Selesai & Lihat Hasil >"
+        Else
+            btnNext.Text = "Lanjut >"
+        End If
 
-        ' Update progress
+        ' Update progress bar and labels
+        Dim progressPercent = CInt((pageNumber / _totalPages) * 100)
+        progressBar.Value = progressPercent
         lblProgress.Text = $"Halaman {pageNumber} dari {_totalPages}"
-        progressBar.Value = CInt((pageNumber / _totalPages) * 100)
+        lblProgressPercent.Text = $"{progressPercent}%"
     End Sub
 
     Private Sub RenderQuestions(questions As List(Of Question), dataStore As Dictionary(Of String, Double))
-        Dim yPosition As Integer = 10
+        Dim yPosition As Integer = 0
 
-        For Each question In questions
-            ' Question label
+        For questionIndex As Integer = 0 To questions.Count - 1
+            Dim question = questions(questionIndex)
+
+            ' Create question card
+            Dim cardPanel As New Panel() With {
+                .BackColor = Color.White,
+                .BorderStyle = BorderStyle.FixedSingle,
+                .Location = New Point(0, yPosition),
+                .Width = panelQuestions.Width - 60,
+                .Padding = New Padding(25, 20, 25, 20),
+                .Margin = New Padding(0, 0, 0, 15)
+            }
+
+            ' Question number badge
+            Dim lblNumber As New Label() With {
+                .Text = $"{questionIndex + 1}",
+                .Font = New Font("Segoe UI", 11, FontStyle.Bold),
+                .ForeColor = Color.White,
+                .BackColor = Color.FromArgb(41, 128, 185),
+                .Size = New Size(35, 35),
+                .Location = New Point(25, 20),
+                .TextAlign = ContentAlignment.MiddleCenter
+            }
+            cardPanel.Controls.Add(lblNumber)
+
+            ' Question text
             Dim lblQuestion As New Label() With {
                 .Text = question.Text,
-                .Font = New Font("Segoe UI", 10, FontStyle.Regular),
-                .AutoSize = True,
-                .MaximumSize = New Size(panelQuestions.Width - 40, 0),
-                .Location = New Point(20, yPosition)
+                .Font = New Font("Segoe UI", 11, FontStyle.Regular),
+                .ForeColor = Color.FromArgb(52, 73, 94),
+                .AutoSize = False,
+                .Size = New Size(cardPanel.Width - 100, 60),
+                .Location = New Point(75, 20)
             }
-            panelQuestions.Controls.Add(lblQuestion)
-            yPosition += lblQuestion.Height + 10
+            cardPanel.Controls.Add(lblQuestion)
+
+            Dim inputYPosition = 90
 
             ' Render input based on question type
             Select Case question.QuestionType
                 Case "choice"
                     Dim comboBox As New ComboBox() With {
                         .Name = "input_" & question.Code,
-                        .Font = New Font("Segoe UI", 9),
-                        .Width = 300,
-                        .Location = New Point(20, yPosition),
-                        .DropDownStyle = ComboBoxStyle.DropDownList
+                        .Font = New Font("Segoe UI", 10),
+                        .Width = cardPanel.Width - 120,
+                        .Location = New Point(75, inputYPosition),
+                        .DropDownStyle = ComboBoxStyle.DropDownList,
+                        .FlatStyle = FlatStyle.Flat
                     }
 
                     For Each opt In question.Options
@@ -172,75 +223,143 @@ Public Class FormAssessment
                         Next
                     End If
 
-                    panelQuestions.Controls.Add(comboBox)
-                    yPosition += 40
+                    cardPanel.Controls.Add(comboBox)
+                    cardPanel.Height = 160
 
                 Case "numeric"
                     Dim numericBox As New NumericUpDown() With {
                         .Name = "input_" & question.Code,
-                        .Font = New Font("Segoe UI", 9),
-                        .Width = 150,
-                        .Location = New Point(20, yPosition),
+                        .Font = New Font("Segoe UI", 11),
+                        .Width = 200,
+                        .Height = 30,
+                        .Location = New Point(75, inputYPosition),
                         .DecimalPlaces = 2,
-                        .Minimum = 0,
-                        .Maximum = 10
+                        .BorderStyle = BorderStyle.FixedSingle
                     }
+
+                    ' Set different ranges based on question type
+                    ' Assume IPK-related questions have "IPK" in their code or text
+                    ' Semester questions have "semester" in their code or text
+                    Dim isIPKQuestion As Boolean = question.Code.ToUpper().Contains("IPK") OrElse question.Text.ToUpper().Contains("IPK")
+                    Dim isSemesterQuestion As Boolean = question.Code.ToUpper().Contains("SEMESTER") OrElse question.Text.ToUpper().Contains("SEMESTER")
+
+                    Dim rangeText As String = ""
+                    If isIPKQuestion Then
+                        ' IPK range: 0.00 - 4.00
+                        numericBox.Minimum = 0
+                        numericBox.Maximum = 4
+                        rangeText = "(0.00 - 4.00)"
+                    ElseIf isSemesterQuestion Then
+                        ' Semester range: 1 - 14 (or higher for some programs)
+                        numericBox.Minimum = 1
+                        numericBox.Maximum = 14
+                        numericBox.DecimalPlaces = 0
+                        rangeText = "(1 - 14)"
+                    Else
+                        ' Default numeric range
+                        numericBox.Minimum = 0
+                        numericBox.Maximum = 100
+                        rangeText = "(0 - 100)"
+                    End If
 
                     If dataStore.ContainsKey(question.Code) Then
                         numericBox.Value = CDec(dataStore(question.Code))
                     End If
 
-                    panelQuestions.Controls.Add(numericBox)
-                    yPosition += 40
-
-                Case "scale"
-                    ' Create radio button group for Likert scale 1-5
-                    Dim flowPanel As New FlowLayoutPanel() With {
-                        .Name = "input_" & question.Code,
-                        .FlowDirection = FlowDirection.LeftToRight,
+                    Dim lblUnit As New Label() With {
+                        .Text = rangeText,
+                        .Font = New Font("Segoe UI", 9, FontStyle.Italic),
+                        .ForeColor = Color.FromArgb(127, 140, 141),
                         .AutoSize = True,
-                        .Location = New Point(20, yPosition)
+                        .Location = New Point(290, inputYPosition + 5)
                     }
 
-                    For i = 1 To 5
-                        Dim radioButton As New RadioButton() With {
-                            .Text = i.ToString(),
-                            .Tag = i,
-                            .Font = New Font("Segoe UI", 9),
-                            .AutoSize = True,
-                            .Margin = New Padding(0, 0, 15, 0)
+                    cardPanel.Controls.Add(numericBox)
+                    cardPanel.Controls.Add(lblUnit)
+                    cardPanel.Height = 150
+
+                Case "scale"
+                    ' Create modern radio button group with visual scale
+                    Dim scalePanel As New FlowLayoutPanel() With {
+                        .Name = "input_" & question.Code,
+                        .FlowDirection = FlowDirection.LeftToRight,
+                        .AutoSize = False,
+                        .Size = New Size(cardPanel.Width - 100, 70),
+                        .Location = New Point(75, inputYPosition),
+                        .WrapContents = False
+                    }
+
+                    ' Scale labels
+                    Dim scaleLabels = {"Sangat Tidak Setuju", "Tidak Setuju", "Netral", "Setuju", "Sangat Setuju"}
+                    Dim scaleColors = {
+                        Color.FromArgb(231, 76, 60),   ' Red
+                        Color.FromArgb(230, 126, 34),  ' Orange
+                        Color.FromArgb(241, 196, 15),  ' Yellow
+                        Color.FromArgb(46, 204, 113),  ' Green
+                        Color.FromArgb(52, 152, 219)   ' Blue
+                    }
+
+                    For i = 0 To 4
+                        ' Create local copy for lambda closure
+                        Dim localIndex As Integer = i
+                        Dim localColor As Color = scaleColors(i)
+
+                        Dim optionPanel As New Panel() With {
+                            .Size = New Size(120, 70),
+                            .Margin = New Padding(0, 0, 10, 0)
                         }
 
-                        If dataStore.ContainsKey(question.Code) AndAlso dataStore(question.Code) = i Then
+                        Dim radioButton As New RadioButton() With {
+                            .Text = (i + 1).ToString(),
+                            .Tag = i + 1,
+                            .Font = New Font("Segoe UI", 14, FontStyle.Bold),
+                            .ForeColor = localColor,
+                            .Size = New Size(50, 30),
+                            .Location = New Point(35, 0),
+                            .Appearance = Appearance.Button,
+                            .FlatStyle = FlatStyle.Flat,
+                            .TextAlign = ContentAlignment.MiddleCenter,
+                            .BackColor = Color.FromArgb(236, 240, 241)
+                        }
+
+                        radioButton.FlatAppearance.BorderColor = localColor
+                        radioButton.FlatAppearance.BorderSize = 2
+                        radioButton.FlatAppearance.CheckedBackColor = localColor
+
+                        ' Add checked changed handler for color (using local copy)
+                        AddHandler radioButton.CheckedChanged, Sub(s, ev)
+                                                                   If radioButton.Checked Then
+                                                                       radioButton.ForeColor = Color.White
+                                                                   Else
+                                                                       radioButton.ForeColor = localColor
+                                                                   End If
+                                                               End Sub
+
+                        If dataStore.ContainsKey(question.Code) AndAlso dataStore(question.Code) = i + 1 Then
                             radioButton.Checked = True
                         End If
 
-                        flowPanel.Controls.Add(radioButton)
+                        Dim lblScale As New Label() With {
+                            .Text = scaleLabels(i),
+                            .Font = New Font("Segoe UI", 8, FontStyle.Regular),
+                            .ForeColor = Color.FromArgb(127, 140, 141),
+                            .AutoSize = False,
+                            .Size = New Size(120, 35),
+                            .Location = New Point(0, 35),
+                            .TextAlign = ContentAlignment.TopCenter
+                        }
+
+                        optionPanel.Controls.Add(radioButton)
+                        optionPanel.Controls.Add(lblScale)
+                        scalePanel.Controls.Add(optionPanel)
                     Next
 
-                    ' Add labels
-                    Dim lblLow As New Label() With {
-                        .Text = "(1: Sangat Tidak Setuju)",
-                        .Font = New Font("Segoe UI", 8, FontStyle.Italic),
-                        .ForeColor = Color.Gray,
-                        .AutoSize = True,
-                        .Location = New Point(20, yPosition + 30)
-                    }
-                    Dim lblHigh As New Label() With {
-                        .Text = "(5: Sangat Setuju)",
-                        .Font = New Font("Segoe UI", 8, FontStyle.Italic),
-                        .ForeColor = Color.Gray,
-                        .AutoSize = True,
-                        .Location = New Point(250, yPosition + 30)
-                    }
-
-                    panelQuestions.Controls.Add(flowPanel)
-                    panelQuestions.Controls.Add(lblLow)
-                    panelQuestions.Controls.Add(lblHigh)
-                    yPosition += 70
+                    cardPanel.Controls.Add(scalePanel)
+                    cardPanel.Height = 200
             End Select
 
-            yPosition += 20 ' Spacing between questions
+            panelQuestions.Controls.Add(cardPanel)
+            yPosition += cardPanel.Height + 15
         Next
     End Sub
 
@@ -285,36 +404,50 @@ Public Class FormAssessment
         End Select
 
         For Each question In questions
-            Dim control = panelQuestions.Controls($"input_{question.Code}")
+            ' Find the control - it's nested inside a card panel
+            Dim control As Control = FindControlByName(panelQuestions, "input_" & question.Code)
 
             If control Is Nothing Then
+                MessageBox.Show($"Control tidak ditemukan untuk pertanyaan: {question.Text}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Return False
             End If
 
             Select Case question.QuestionType
                 Case "choice"
-                    Dim combo = CType(control, ComboBox)
-                    If combo.SelectedItem Is Nothing Then
+                    Dim combo = TryCast(control, ComboBox)
+                    If combo Is Nothing OrElse combo.SelectedItem Is Nothing Then
                         Return False
                     End If
                     Dim selectedItem = CType(combo.SelectedItem, QuestionOptionItem)
                     dataStore(question.Code) = selectedItem.Value
 
                 Case "numeric"
-                    Dim numeric = CType(control, NumericUpDown)
+                    Dim numeric = TryCast(control, NumericUpDown)
+                    If numeric Is Nothing Then
+                        Return False
+                    End If
                     dataStore(question.Code) = CDbl(numeric.Value)
 
                 Case "scale"
-                    Dim flowPanel = CType(control, FlowLayoutPanel)
+                    Dim flowPanel = TryCast(control, FlowLayoutPanel)
+                    If flowPanel Is Nothing Then
+                        Return False
+                    End If
+
                     Dim selectedValue As Integer = 0
-                    For Each ctrl In flowPanel.Controls
-                        If TypeOf ctrl Is RadioButton Then
-                            Dim radio = CType(ctrl, RadioButton)
-                            If radio.Checked Then
-                                selectedValue = CInt(radio.Tag)
-                                Exit For
-                            End If
+                    For Each optionPanel As Control In flowPanel.Controls
+                        If TypeOf optionPanel Is Panel Then
+                            For Each ctrl As Control In optionPanel.Controls
+                                If TypeOf ctrl Is RadioButton Then
+                                    Dim radio = CType(ctrl, RadioButton)
+                                    If radio.Checked Then
+                                        selectedValue = CInt(radio.Tag)
+                                        Exit For
+                                    End If
+                                End If
+                            Next
                         End If
+                        If selectedValue > 0 Then Exit For
                     Next
 
                     If selectedValue = 0 Then
@@ -326,6 +459,28 @@ Public Class FormAssessment
         Next
 
         Return True
+    End Function
+
+    ''' <summary>
+    ''' Helper function to recursively find a control by name
+    ''' </summary>
+    Private Function FindControlByName(parent As Control, name As String) As Control
+        ' Check direct children first
+        For Each ctrl As Control In parent.Controls
+            If ctrl.Name = name Then
+                Return ctrl
+            End If
+        Next
+
+        ' Recursively search in nested controls
+        For Each ctrl As Control In parent.Controls
+            Dim found = FindControlByName(ctrl, name)
+            If found IsNot Nothing Then
+                Return found
+            End If
+        Next
+
+        Return Nothing
     End Function
 
     Private Sub ProcessInference()

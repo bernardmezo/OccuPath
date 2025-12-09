@@ -159,4 +159,8 @@ Public Class Form4
         ' Set initial focus
         txtLoginUsername.Focus()
     End Sub
+
+    Private Sub tabLogin_Click(sender As Object, e As EventArgs) Handles tabLogin.Click
+
+    End Sub
 End Class
