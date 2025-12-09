@@ -37,8 +37,8 @@ Public Module DatabaseConnection
     ''' </summary>
     Private Function GetConnectionString() As String
         ' Connection string dengan konfigurasi lengkap untuk compatibility
-        ' Jika error "Requested value 'None' was not found", coba ganti SslMode=Preferred atau hapus parameter SslMode
-        Return $"Server={DB_SERVER};Port=3306;Database={DB_NAME};Uid={DB_USER};Pwd={DB_PASS};AllowPublicKeyRetrieval=True;CharSet=utf8;"
+        ' Updated for better XAMPP/MySQL compatibility
+        Return $"Server={DB_SERVER};Port=3306;Database={DB_NAME};Uid={DB_USER};Pwd={DB_PASS};CharSet=utf8mb4;SslMode=None;AllowPublicKeyRetrieval=True;ConnectionTimeout=30;"
     End Function
 
     ''' <summary>
@@ -56,10 +56,71 @@ Public Module DatabaseConnection
         Try
             Using conn As New MySqlConnection(GetConnectionString())
                 conn.Open()
+                Console.WriteLine("? Database connected successfully!")
+                Console.WriteLine($"Server: {DB_SERVER}")
+                Console.WriteLine($"Database: {DB_NAME}")
                 Return True
             End Using
+        Catch ex As MySqlException
+            Dim errorMsg As String = "Koneksi database gagal!" & vbCrLf & vbCrLf
+            
+            Select Case ex.Number
+                Case 0
+                    errorMsg &= "? MySQL service tidak berjalan!" & vbCrLf & vbCrLf &
+                               "SOLUSI:" & vbCrLf &
+                               "1. Buka XAMPP Control Panel" & vbCrLf &
+                               "2. Klik tombol 'Start' di MySQL" & vbCrLf &
+                               "3. Tunggu sampai status jadi hijau"
+                               
+                Case 1042
+                    errorMsg &= "? Tidak bisa connect ke server MySQL!" & vbCrLf & vbCrLf &
+                               "SOLUSI:" & vbCrLf &
+                               "1. Cek XAMPP MySQL sudah running" & vbCrLf &
+                               "2. Cek port 3306 tidak dipakai aplikasi lain"
+                               
+                Case 1044
+                    errorMsg &= "? User 'root' tidak punya akses!" & vbCrLf & vbCrLf &
+                               "SOLUSI:" & vbCrLf &
+                               "Ganti DB_USER di DatabaseConnection.vb"
+                               
+                Case 1045
+                    errorMsg &= "? Username atau password salah!" & vbCrLf & vbCrLf &
+                               "SOLUSI:" & vbCrLf &
+                               "Cek DB_USER dan DB_PASS di DatabaseConnection.vb" & vbCrLf &
+                               $"Current: username='{DB_USER}', password='{If(String.IsNullOrEmpty(DB_PASS), "(kosong)", "***")}'"
+                               
+                Case 1049
+                    errorMsg &= "? Database 'db_occupath' BELUM DIBUAT!" & vbCrLf & vbCrLf &
+                               "SOLUSI:" & vbCrLf &
+                               "1. Buka phpMyAdmin (http://localhost/phpmyadmin)" & vbCrLf &
+                               "2. Klik tab 'Databases' atau 'New'" & vbCrLf &
+                               "3. Database name: db_occupath" & vbCrLf &
+                               "4. Collation: utf8_general_ci" & vbCrLf &
+                               "5. Klik 'Create'" & vbCrLf &
+                               "6. Import file Database_Setup_MVP1.sql" & vbCrLf & vbCrLf &
+                               "ATAU jalankan query ini di SQL tab:" & vbCrLf &
+                               "CREATE DATABASE db_occupath;"
+                               
+                Case Else
+                    errorMsg &= $"? MySQL Error #{ex.Number}" & vbCrLf & vbCrLf &
+                               $"Detail: {ex.Message}"
+            End Select
+            
+            MessageBox.Show(errorMsg, "Error Koneksi Database", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Console.WriteLine(errorMsg)
+            Return False
+            
         Catch ex As Exception
-            MessageBox.Show($"Koneksi database gagal: {ex.Message}", "Error Koneksi", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Dim errorMsg As String = "Error koneksi database!" & vbCrLf & vbCrLf &
+                                    $"Type: {ex.GetType().Name}" & vbCrLf &
+                                    $"Message: {ex.Message}" & vbCrLf & vbCrLf &
+                                    "KEMUNGKINAN:" & vbCrLf &
+                                    "1. MySQL Connector belum terinstall" & vbCrLf &
+                                    "   Install: MySql.Data via NuGet" & vbCrLf &
+                                    "2. XAMPP/MySQL belum jalan"
+            
+            MessageBox.Show(errorMsg, "Error Koneksi", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Console.WriteLine(errorMsg)
             Return False
         End Try
     End Function
@@ -250,13 +311,14 @@ Public Module DatabaseConnection
     End Function
 
     ''' <summary>
-    ''' Registrasi user baru ke database
+    ''' Registrasi user baru ke database (Compatible with MVP1 schema)
     ''' </summary>
     Public Function RegisterUser(username As String, password As String, namaLengkap As String, email As String) As (Success As Boolean, Message As String, UserId As Integer)
         ' Cek apakah username sudah ada
         Dim checkQuery As String = "SELECT COUNT(*) FROM users WHERE username = @username"
         Dim checkEmailQuery As String = "SELECT COUNT(*) FROM users WHERE email = @email"
-        Dim insertQuery As String = "INSERT INTO users (username, password_hash, nama_lengkap, email) VALUES (@username, @password, @nama, @email); SELECT LAST_INSERT_ID();"
+        ' MVP1 uses 'password' (hashed) and 'full_name', 'id' columns
+        Dim insertQuery As String = "INSERT INTO users (username, password, full_name, email, role) VALUES (@username, @password, @nama, @email, 'student'); SELECT LAST_INSERT_ID();"
 
         Using conn As MySqlConnection = GetConnection()
             Try
@@ -272,20 +334,22 @@ Public Module DatabaseConnection
                 End Using
 
                 ' Cek email
-                Using cmd As New MySqlCommand(checkEmailQuery, conn)
-                    cmd.Parameters.AddWithValue("@email", email)
-                    Dim count As Integer = Convert.ToInt32(cmd.ExecuteScalar())
-                    If count > 0 Then
-                        Return (False, "Email sudah terdaftar. Silakan gunakan email lain.", 0)
-                    End If
-                End Using
+                If Not String.IsNullOrEmpty(email) Then
+                    Using cmd As New MySqlCommand(checkEmailQuery, conn)
+                        cmd.Parameters.AddWithValue("@email", email)
+                        Dim count As Integer = Convert.ToInt32(cmd.ExecuteScalar())
+                        If count > 0 Then
+                            Return (False, "Email sudah terdaftar. Silakan gunakan email lain.", 0)
+                        End If
+                    End Using
+                End If
 
-                ' Insert user baru
+                ' Insert user baru - password di-hash untuk keamanan
                 Using cmd As New MySqlCommand(insertQuery, conn)
                     cmd.Parameters.AddWithValue("@username", username)
                     cmd.Parameters.AddWithValue("@password", HashPassword(password))
                     cmd.Parameters.AddWithValue("@nama", namaLengkap)
-                    cmd.Parameters.AddWithValue("@email", email)
+                    cmd.Parameters.AddWithValue("@email", If(String.IsNullOrEmpty(email), DBNull.Value, CObj(email)))
 
                     Dim userId As Integer = Convert.ToInt32(cmd.ExecuteScalar())
                     Return (True, "Registrasi berhasil!", userId)
@@ -298,10 +362,12 @@ Public Module DatabaseConnection
     End Function
 
     ''' <summary>
-    ''' Login user dengan username dan password
+    ''' Login user dengan username dan password (Compatible with MVP1 schema)
+    ''' Supports both hashed and plain text passwords for backward compatibility
     ''' </summary>
     Public Function LoginUser(username As String, password As String) As (Success As Boolean, Message As String, UserId As Integer, NamaLengkap As String)
-        Dim query As String = "SELECT id_user, nama_lengkap, password_hash FROM users WHERE username = @username"
+        ' MVP1 uses 'id' and 'full_name' columns, 'password' (plain or hashed)
+        Dim query As String = "SELECT id, full_name, password FROM users WHERE username = @username"
 
         Using conn As MySqlConnection = GetConnection()
             Try
@@ -311,12 +377,22 @@ Public Module DatabaseConnection
 
                     Using reader As MySqlDataReader = cmd.ExecuteReader()
                         If reader.Read() Then
-                            Dim storedHash As String = reader("password_hash").ToString()
+                            Dim storedPassword As String = reader("password").ToString()
                             Dim inputHash As String = HashPassword(password)
 
-                            If storedHash = inputHash Then
-                                Dim userId As Integer = Convert.ToInt32(reader("id_user"))
-                                Dim namaLengkap As String = reader("nama_lengkap").ToString()
+                            ' Support both plain text (legacy) and hashed password
+                            Dim passwordMatch As Boolean = False
+                            If storedPassword = password Then
+                                ' Plain text match (legacy data)
+                                passwordMatch = True
+                            ElseIf storedPassword = inputHash Then
+                                ' Hashed password match
+                                passwordMatch = True
+                            End If
+
+                            If passwordMatch Then
+                                Dim userId As Integer = Convert.ToInt32(reader("id"))
+                                Dim namaLengkap As String = reader("full_name").ToString()
                                 Return (True, "Login berhasil!", userId, namaLengkap)
                             Else
                                 Return (False, "Password salah!", 0, "")
@@ -334,10 +410,11 @@ Public Module DatabaseConnection
     End Function
 
     ''' <summary>
-    ''' Mendapatkan data user berdasarkan ID
+    ''' Mendapatkan data user berdasarkan ID (Compatible with MVP1 schema)
     ''' </summary>
     Public Function GetUserById(userId As Integer) As (Found As Boolean, Username As String, NamaLengkap As String, Email As String)
-        Dim query As String = "SELECT username, nama_lengkap, email FROM users WHERE id_user = @id"
+        ' MVP1 uses 'id' and 'full_name' columns
+        Dim query As String = "SELECT username, full_name, email FROM users WHERE id = @id"
 
         Using conn As MySqlConnection = GetConnection()
             Try
@@ -347,7 +424,9 @@ Public Module DatabaseConnection
 
                     Using reader As MySqlDataReader = cmd.ExecuteReader()
                         If reader.Read() Then
-                            Return (True, reader("username").ToString(), reader("nama_lengkap").ToString(), reader("email").ToString())
+                            Dim fullName As String = reader("full_name").ToString()
+                            Dim emailVal As String = If(reader.IsDBNull(reader.GetOrdinal("email")), "", reader("email").ToString())
+                            Return (True, reader("username").ToString(), fullName, emailVal)
                         Else
                             Return (False, "", "", "")
                         End If

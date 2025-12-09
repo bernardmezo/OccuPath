@@ -26,8 +26,12 @@
 
     Private Sub DisplayQuestion()
         If currentQuestionIndex >= 0 AndAlso currentQuestionIndex < questions.Count Then
-            ' Update progress
+            ' Update Progress Label
             lblProgress.Text = $"Pertanyaan {currentQuestionIndex + 1} / {totalQuestions}"
+
+            ' Update Progress Bar based on ANSWERED questions
+            progressBar.Maximum = totalQuestions
+            progressBar.Value = answers.Count
 
             ' Display question
             Dim currentQ = questions(currentQuestionIndex)
@@ -52,7 +56,11 @@
 
             ' Update button states
             btnPrevious.Enabled = (currentQuestionIndex > 0)
-            btnNext.Text = If(currentQuestionIndex = totalQuestions - 1, "Selesai", "Selanjutnya →")
+            If currentQuestionIndex = totalQuestions - 1 Then
+                btnNext.Text = "Selesai"
+            Else
+                btnNext.Text = "Selanjutnya >"
+            End If
         End If
     End Sub
 
