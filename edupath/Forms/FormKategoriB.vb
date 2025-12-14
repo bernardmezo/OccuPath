@@ -53,6 +53,11 @@
             For Each opt In currentQ.Options
                 cboAnswer.Items.Add(opt)
             Next
+            
+            ' Improve ComboBox visibility
+            cboAnswer.BackColor = Color.White
+            cboAnswer.ForeColor = Color.FromArgb(44, 62, 80)
+            cboAnswer.FlatStyle = FlatStyle.Standard
 
             ' Restore previous answer if exists
             If answers.ContainsKey(currentQuestionIndex) Then

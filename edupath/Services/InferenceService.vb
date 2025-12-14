@@ -206,22 +206,32 @@ Namespace Services
         Private Function GetProfilModifiers() As List(Of ProfilModifier)
             Dim result As New List(Of ProfilModifier)()
 
-            Using conn = DatabaseConnection.GetConnection()
-                conn.Open()
-                Dim sql = "SELECT profil_lulusan_id, kategori_a_code, option_value, modifier FROM profil_modifiers"
-                Using cmd As New MySqlCommand(sql, conn)
-                    Using reader = cmd.ExecuteReader()
-                        While reader.Read()
-                            result.Add(New ProfilModifier() With {
-                        .ProfilLulusanId = reader.GetInt32("profil_lulusan_id"),
-                        .KategoriACode = reader.GetString("kategori_a_code"),
-                        .OptionValue = reader.GetDouble("option_value"),
-                        .Modifier = reader.GetDouble("modifier")
-                    })
-                        End While
+            Try
+                Using conn = DatabaseConnection.GetConnection()
+                    conn.Open()
+                    Dim sql = "SELECT profil_lulusan_id, kategori_a_code, option_value, modifier FROM profil_modifiers"
+                    Using cmd As New MySqlCommand(sql, conn)
+                        Using reader = cmd.ExecuteReader()
+                            While reader.Read()
+                                result.Add(New ProfilModifier() With {
+                            .ProfilLulusanId = reader.GetInt32("profil_lulusan_id"),
+                            .KategoriACode = reader.GetString("kategori_a_code"),
+                            .OptionValue = reader.GetDouble("option_value"),
+                            .Modifier = reader.GetDouble("modifier")
+                        })
+                            End While
+                        End Using
                     End Using
                 End Using
-            End Using
+            Catch ex As MySqlException
+                ' Table doesn't exist or query error - modifiers are optional
+                ' Just continue without modifiers (CF calculation still works)
+                MessageBox.Show($"Warning: Table profil_modifiers tidak ditemukan atau kosong.{vbCrLf}Sistem akan melanjutkan tanpa modifier.{vbCrLf}{vbCrLf}Untuk mengaktifkan fitur modifier, jalankan SQL file: Occupath_Complete_Schema.sql", 
+                               "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Catch ex As Exception
+                ' Other errors - log and continue
+                Console.WriteLine($"Warning: Could not load profil_modifiers - {ex.Message}")
+            End Try
 
             Return result
         End Function
@@ -355,12 +365,11 @@ Namespace Services
                         ' 3. Insert results
                         For Each result In results
                             Dim sqlResult = "INSERT INTO results " &
-                                            "(assessment_id, profil_lulusan_id, cf_value, cf_percentage, ranking, matched_rules, explanation) " &
-                                            "VALUES (@assessmentId, @profilId, @cfValue, @cfPercent, @ranking, @matchedRules, @explanation)"
+                                            "(assessment_id, profil_lulusan_id, cf_percentage, ranking, matched_rules, explanation) " &
+                                            "VALUES (@assessmentId, @profilId, @cfPercent, @ranking, @matchedRules, @explanation)"
                             Using cmd As New MySqlCommand(sqlResult, conn, transaction)
                                 cmd.Parameters.AddWithValue("@assessmentId", assessmentId)
                                 cmd.Parameters.AddWithValue("@profilId", result.ProfilLulusan.Id)
-                                cmd.Parameters.AddWithValue("@cfValue", result.CertaintyFactor)
                                 cmd.Parameters.AddWithValue("@cfPercent", result.CertaintyFactor * 100)
                                 cmd.Parameters.AddWithValue("@ranking", result.Ranking)
                                 cmd.Parameters.AddWithValue("@matchedRules", String.Join(",", result.MatchedRules))

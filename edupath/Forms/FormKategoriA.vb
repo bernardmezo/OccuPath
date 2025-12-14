@@ -79,6 +79,11 @@ Public Class FormKategoriA
             cboAnswer.DisplayMember = "Text"
             cboAnswer.ValueMember = "Value"
             cboAnswer.SelectedIndex = -1
+            
+            ' Improve ComboBox visibility
+            cboAnswer.BackColor = Color.White
+            cboAnswer.ForeColor = Color.FromArgb(44, 62, 80)
+            cboAnswer.FlatStyle = FlatStyle.Standard
 
             ' Restore previous answer
             If answers.ContainsKey(currentQuestionIndex) Then

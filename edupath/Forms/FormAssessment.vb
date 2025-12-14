@@ -74,15 +74,11 @@ Public Class FormAssessment
         'Dim sql = "SELECT code, text, question_type, display_order FROM questions " &
         '          "WHERE kategori = @kategori AND is_active = TRUE ORDER BY display_order"
 
-        Dim sql = "SELECT question_code AS code, question_text AS text,
-                    CASE 
-                        WHEN question_type = 'single_choice' THEN 'choice'
-                        WHEN question_type = 'multiple_choice' THEN 'choice'
-                        ELSE question_type
-                    END AS question_type, question_order AS display_order
-                    FROM ref_questions
+        Dim sql = "SELECT code, text,
+                    question_type, display_order
+                    FROM questions
                     WHERE kategori = @kategori AND is_active = 1
-                    ORDER BY question_order"
+                    ORDER BY display_order"
 
 
         Using cmd As New MySqlCommand(sql, conn)
@@ -114,10 +110,10 @@ Public Class FormAssessment
         'Dim sql = "SELECT option_text, option_value, display_order FROM question_options " &
         '          "WHERE question_code = @code ORDER BY display_order"
 
-        Dim sql = "SELECT option_text, option_value, option_order AS display_order
-                    FROM ref_question_options
+        Dim sql = "SELECT option_text, option_value, display_order
+                    FROM question_options
                     WHERE question_code = @code
-                    ORDER BY option_order"
+                    ORDER BY display_order"
 
 
         Using cmd As New MySqlCommand(sql, conn)
@@ -142,15 +138,15 @@ Public Class FormAssessment
         ' Update page title and description with icons
         Select Case pageNumber
             Case 1
-                lblPageTitle.Text = "?? Kategori A: Data Diri"
+                lblPageTitle.Text = "Kategori A: Data Diri"
                 lblPageDescription.Text = "Silakan isi data diri Anda dengan lengkap dan akurat"
                 RenderQuestions(_questionsKategoriA, _personalData)
             Case 2
-                lblPageTitle.Text = "?? Kategori B: Data Akademis"
+                lblPageTitle.Text = "Kategori B: Data Akademis"
                 lblPageDescription.Text = "Informasi tentang prestasi akademik dan kemampuan teknis Anda"
                 RenderQuestions(_questionsKategoriB, _akademisData)
             Case 3
-                lblPageTitle.Text = "?? Kategori C: Karakter & Minat"
+                lblPageTitle.Text = "Kategori C: Karakter & Minat"
                 lblPageDescription.Text = "Penilaian karakter pribadi dan minat karir Anda (Skala 1-5)"
                 RenderQuestions(_questionsKategoriC, _karakterData)
         End Select
@@ -216,11 +212,13 @@ Public Class FormAssessment
                 Case "choice"
                     Dim comboBox As New ComboBox() With {
                         .Name = "input_" & question.Code,
-                        .Font = New Font("Segoe UI", 10),
+                        .Font = New Font("Segoe UI", 11, FontStyle.Regular),
                         .Width = cardPanel.Width - 120,
                         .Location = New Point(75, inputYPosition),
                         .DropDownStyle = ComboBoxStyle.DropDownList,
-                        .FlatStyle = FlatStyle.Flat
+                        .BackColor = Color.White,
+                        .ForeColor = Color.FromArgb(44, 62, 80),
+                        .FlatStyle = FlatStyle.Standard
                     }
 
                     For Each opt In question.Options
@@ -315,6 +313,9 @@ Public Class FormAssessment
                         Color.FromArgb(46, 204, 113),  ' Green
                         Color.FromArgb(52, 152, 219)   ' Blue
                     }
+                    
+                    ' Create list to track all radio buttons in this group
+                    Dim radioButtonGroup As New List(Of RadioButton)
 
                     For i = 0 To 4
                         ' Create local copy for lambda closure
@@ -336,19 +337,39 @@ Public Class FormAssessment
                             .Appearance = Appearance.Button,
                             .FlatStyle = FlatStyle.Flat,
                             .TextAlign = ContentAlignment.MiddleCenter,
-                            .BackColor = Color.FromArgb(236, 240, 241)
+                            .BackColor = Color.FromArgb(236, 240, 241),
+                            .AutoCheck = True
                         }
 
                         radioButton.FlatAppearance.BorderColor = localColor
                         radioButton.FlatAppearance.BorderSize = 2
                         radioButton.FlatAppearance.CheckedBackColor = localColor
+                        
+                        ' Add to group list
+                        radioButtonGroup.Add(radioButton)
 
-                        ' Add checked changed handler for color (using local copy)
+                        ' Add click handler to ensure mutual exclusivity
+                        AddHandler radioButton.Click, Sub(s, ev)
+                                                          ' Uncheck all others first
+                                                          For Each rb In radioButtonGroup
+                                                              If rb IsNot radioButton Then
+                                                                  rb.Checked = False
+                                                              End If
+                                                          Next
+                                                          ' Then check this one
+                                                          radioButton.Checked = True
+                                                      End Sub
+
+                        ' Add checked changed handler - reset all others in group
                         AddHandler radioButton.CheckedChanged, Sub(s, ev)
                                                                    If radioButton.Checked Then
+                                                                       ' Set checked button style
                                                                        radioButton.ForeColor = Color.White
+                                                                       radioButton.BackColor = localColor
                                                                    Else
+                                                                       ' Reset unchecked button to outline
                                                                        radioButton.ForeColor = localColor
+                                                                       radioButton.BackColor = Color.FromArgb(236, 240, 241)
                                                                    End If
                                                                End Sub
 
@@ -448,38 +469,54 @@ Public Class FormAssessment
                 Case "scale"
                     Dim flowPanel = TryCast(control, FlowLayoutPanel)
                     If flowPanel Is Nothing Then
+                        MessageBox.Show($"FlowPanel tidak ditemukan untuk: {question.Text}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                         Return False
                     End If
 
                     Dim selectedValue As Integer = 0
-                    For Each optionPanel As Control In flowPanel.Controls
-                        If TypeOf optionPanel Is Panel Then
-                            For Each ctrl As Control In optionPanel.Controls
-                                If TypeOf ctrl Is RadioButton Then
-                                    Dim radio = CType(ctrl, RadioButton)
+                    ' Search through all controls recursively
+                    For Each panelCtrl As Control In flowPanel.Controls
+                        If TypeOf panelCtrl Is Panel Then
+                            For Each innerCtrl As Control In panelCtrl.Controls
+                                If TypeOf innerCtrl Is RadioButton Then
+                                    Dim radio = CType(innerCtrl, RadioButton)
                                     If radio.Checked Then
                                         selectedValue = CInt(radio.Tag)
                                         Exit For
                                     End If
                                 End If
                             Next
+                        ElseIf TypeOf panelCtrl Is RadioButton Then
+                            ' Direct RadioButton in flowpanel
+                            Dim radio = CType(panelCtrl, RadioButton)
+                            If radio.Checked Then
+                                selectedValue = CInt(radio.Tag)
+                                Exit For
+                            End If
                         End If
                         If selectedValue > 0 Then Exit For
                     Next
 
                     If selectedValue = 0 Then
+                        MessageBox.Show($"Belum memilih skala untuk: {question.Text}", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                         Return False
                     End If
 
-                    ' cari option_value berdasarkan skala yang dipilih
-                    Dim selectedOption = question.Options.
-                        FirstOrDefault(Function(o) o.DisplayOrder = selectedValue)
-
-                    If selectedOption Is Nothing Then
-                        Return False
+                    ' For scale questions, store the scale value directly (1-5)
+                    ' Or try to find matching option by display_order
+                    If question.Options IsNot Nothing AndAlso question.Options.Count > 0 Then
+                        ' Find option where display_order matches selected value
+                        Dim matchingOption = question.Options.FirstOrDefault(Function(o) o.DisplayOrder = selectedValue)
+                        If matchingOption IsNot Nothing Then
+                            dataStore(question.Code) = matchingOption.Value
+                        Else
+                            ' Fallback: just use the selected value directly
+                            dataStore(question.Code) = CDbl(selectedValue)
+                        End If
+                    Else
+                        ' No options defined, use scale value directly
+                        dataStore(question.Code) = CDbl(selectedValue)
                     End If
-
-                    dataStore(question.Code) = selectedOption.Value
 
             End Select
         Next

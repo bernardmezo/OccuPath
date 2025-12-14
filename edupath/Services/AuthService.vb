@@ -42,7 +42,8 @@ Namespace Services
 
                 ' Verifikasi password
                 Dim inputHash = HashPassword(password)
-                If user.PasswordHash <> inputHash Then
+                ' Support backward compatibility: check both hashed and plain password
+                If user.PasswordHash <> inputHash AndAlso user.PasswordHash <> password Then
                     Return New AuthResult(False, "Password salah!")
                 End If
 

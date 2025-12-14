@@ -148,7 +148,7 @@ Partial Class FormDashboard
         Me.btnStartAssessment.Name = "btnStartAssessment"
         Me.btnStartAssessment.Size = New System.Drawing.Size(720, 80)
         Me.btnStartAssessment.TabIndex = 0
-        Me.btnStartAssessment.Text = "🎯 Mulai Tes Profil Lulusan"
+        Me.btnStartAssessment.Text = "Mulai Tes Profil Lulusan"
         Me.btnStartAssessment.UseVisualStyleBackColor = False
         '
         'btnHistory
@@ -162,7 +162,7 @@ Partial Class FormDashboard
         Me.btnHistory.Name = "btnHistory"
         Me.btnHistory.Size = New System.Drawing.Size(350, 60)
         Me.btnHistory.TabIndex = 1
-        Me.btnHistory.Text = "📊 Lihat Riwayat Tes"
+        Me.btnHistory.Text = "Lihat Riwayat Tes"
         Me.btnHistory.UseVisualStyleBackColor = False
         '
         'btnProfile
@@ -176,7 +176,7 @@ Partial Class FormDashboard
         Me.btnProfile.Name = "btnProfile"
         Me.btnProfile.Size = New System.Drawing.Size(350, 60)
         Me.btnProfile.TabIndex = 2
-        Me.btnProfile.Text = "👤 Profil Saya"
+        Me.btnProfile.Text = "Profil Saya"
         Me.btnProfile.UseVisualStyleBackColor = False
         '
         'btnAbout
@@ -190,7 +190,7 @@ Partial Class FormDashboard
         Me.btnAbout.Name = "btnAbout"
         Me.btnAbout.Size = New System.Drawing.Size(720, 60)
         Me.btnAbout.TabIndex = 3
-        Me.btnAbout.Text = "ℹ️ Tentang OccuPath"
+        Me.btnAbout.Text = "Tentang OccuPath"
         Me.btnAbout.UseVisualStyleBackColor = False
         '
         'FormDashboard

@@ -16,12 +16,12 @@ Namespace Data
         ''' </summary>
         Public Function GetByKategori(kategori As String) As List(Of Question)
             Dim result As New List(Of Question)
-            Dim query As String = "SELECT q.id_question, q.question_code, q.question_text, q.question_order, " &
-                                  "o.id_option, o.option_text, o.option_value, o.option_order " &
-                                  "FROM ref_questions q " &
-                                  "JOIN ref_question_options o ON q.question_code = o.question_code " &
+            Dim query As String = "SELECT q.id, q.code, q.text, q.display_order, " &
+                                  "o.id, o.option_text, o.option_value, o.display_order " &
+                                  "FROM questions q " &
+                                  "JOIN question_options o ON q.code = o.question_code " &
                                   "WHERE q.kategori = @kategori AND q.is_active = TRUE " &
-                                  "ORDER BY q.question_order ASC, o.option_order ASC"
+                                  "ORDER BY q.display_order ASC, o.display_order ASC"
 
             Using conn = Data.DbContext.CreateConnection()
                 conn.Open()
@@ -33,17 +33,17 @@ Namespace Data
                         Dim currentQuestion As Question = Nothing
 
                         While reader.Read()
-                            Dim code As String = reader.GetString("question_code")
+                            Dim code As String = reader.GetString("code")
 
                             ' Jika kode pertanyaan baru, buat objek Question baru
                             If code <> currentCode Then
                                 currentQuestion = New Question() With {
-                                    .Id = reader.GetInt32("id_question"),
+                                    .Id = reader.GetInt32(0),
                                     .Code = code,
                                     .Kategori = kategori,
-                                    .Text = reader.GetString("question_text"),
-                                    .Order = reader.GetInt32("question_order"),
-                                    .DisplayOrder = reader.GetInt32("question_order"),
+                                    .Text = reader.GetString("text"),
+                                    .Order = reader.GetInt32(3),
+                                    .DisplayOrder = reader.GetInt32(3),
                                     .Options = New List(Of Models.QuestionOption)()
                                 }
                                 result.Add(currentQuestion)
@@ -52,12 +52,12 @@ Namespace Data
 
                             ' Tambahkan opsi ke pertanyaan saat ini
                             currentQuestion.Options.Add(New Models.QuestionOption() With {
-                                .Id = reader.GetInt32("id_option"),
+                                .Id = reader.GetInt32(4),
                                 .QuestionCode = code,
                                 .Text = reader.GetString("option_text"),
                                 .Value = reader.GetInt32("option_value"),
-                                .Order = reader.GetInt32("option_order"),
-                                .DisplayOrder = reader.GetInt32("option_order")
+                                .Order = reader.GetInt32(7),
+                                .DisplayOrder = reader.GetInt32(7)
                             })
                         End While
                     End Using
@@ -92,7 +92,7 @@ Namespace Data
         ''' Menghitung jumlah pertanyaan per kategori
         ''' </summary>
         Public Function CountByKategori(kategori As String) As Integer
-            Dim query As String = "SELECT COUNT(*) FROM ref_questions WHERE kategori = @kategori AND is_active = TRUE"
+            Dim query As String = "SELECT COUNT(*) FROM questions WHERE kategori = @kategori AND is_active = TRUE"
 
             Using conn = Data.DbContext.CreateConnection()
                 conn.Open()

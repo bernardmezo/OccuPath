@@ -48,7 +48,7 @@ Partial Class Form2
         lblTitle.Name = "lblTitle"
         lblTitle.Size = New Size(240, 30)
         lblTitle.TabIndex = 1
-        lblTitle.Text = "📝 SURVEY"
+        lblTitle.Text = "SURVEY"
         ' 
         ' lblProgress
         ' 
@@ -101,7 +101,7 @@ Partial Class Form2
         lblInstruction.Name = "lblInstruction"
         lblInstruction.Size = New Size(160, 19)
         lblInstruction.TabIndex = 0
-        lblInstruction.Text = "💡 Pilih jawaban Anda:"
+        lblInstruction.Text = "Pilih jawaban Anda:"
         ' 
         ' cboAnswer
         ' 

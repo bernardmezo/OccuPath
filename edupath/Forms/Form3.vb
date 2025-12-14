@@ -69,11 +69,22 @@
 
     Private Sub RadioButton_CheckedChanged(sender As Object, e As EventArgs)
         Dim rb As RadioButton = CType(sender, RadioButton)
+        
+        ' Reset all radio buttons to outline style first
+        For Each ctrl As Control In panelOptions.Controls
+            If TypeOf ctrl Is RadioButton Then
+                Dim radioBtn As RadioButton = CType(ctrl, RadioButton)
+                If Not radioBtn.Checked Then
+                    radioBtn.ForeColor = Color.FromArgb(127, 140, 141)
+                    radioBtn.BackColor = Color.FromArgb(236, 240, 241)
+                End If
+            End If
+        Next
+        
+        ' Apply filled style only to checked button
         If rb.Checked Then
             rb.ForeColor = Color.White
-        Else
-            rb.ForeColor = Color.FromArgb(127, 140, 141)
-            rb.BackColor = Color.FromArgb(236, 240, 241)
+            rb.BackColor = Color.FromArgb(52, 152, 219) ' Filled background
         End If
     End Sub
 

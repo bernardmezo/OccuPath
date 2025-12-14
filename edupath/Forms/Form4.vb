@@ -37,15 +37,43 @@ Public Class Form4
 
             MessageBox.Show($"Selamat datang, {result.User.NamaLengkap}!", "Login Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-            ' Close this form and open dashboard
+            ' Close this form
             Me.DialogResult = DialogResult.OK
             Me.Hide()
 
-            ' Open dashboard with userId and username
-            Dim dashboardForm As New FormDashboard(result.User.Id, result.User.NamaLengkap)
-            dashboardForm.ShowDialog()
+            ' Check user role - admin or student
+            Dim userRepo As New UserRepository()
+            Dim fullUser = userRepo.FindById(result.User.Id)
+            
+            ' Get role from database (users table has role column: 'student' or 'admin')
+            Dim role As String = "student" ' default
+            Try
+                Using conn = DatabaseConnection.GetConnection()
+                    conn.Open()
+                    Dim cmd As New MySql.Data.MySqlClient.MySqlCommand("SELECT role FROM users WHERE id = @userId", conn)
+                    cmd.Parameters.AddWithValue("@userId", result.User.Id)
+                    Dim roleResult = cmd.ExecuteScalar()
+                    If roleResult IsNot Nothing Then
+                        role = roleResult.ToString()
+                    End If
+                End Using
+            Catch ex As Exception
+                ' If error, default to student
+                Console.WriteLine($"Error getting role: {ex.Message}")
+            End Try
 
-            ' Close login form after dashboard closes
+            ' Route based on role
+            If role = "admin" Then
+                ' Open User Management for admin
+                Dim userMgmtForm As New FormUserManagement(result.User.Id)
+                userMgmtForm.ShowDialog()
+            Else
+                ' Open dashboard for student
+                Dim dashboardForm As New FormDashboard(result.User.Id, result.User.NamaLengkap)
+                dashboardForm.ShowDialog()
+            End If
+
+            ' Close login form after dashboard/user management closes
             Me.Close()
         Else
             MessageBox.Show(result.Message, "Login Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error)

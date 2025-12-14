@@ -65,7 +65,7 @@ Partial Class FormAssessment
         lblPageTitle.Name = "lblPageTitle"
         lblPageTitle.Size = New Size(315, 37)
         lblPageTitle.TabIndex = 0
-        lblPageTitle.Text = "?? Kategori A: Data Diri"
+        lblPageTitle.Text = "Kategori A: Data Diri"
         ' 
         ' lblPageDescription
         ' 

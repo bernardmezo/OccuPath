@@ -132,11 +132,11 @@ Public Module DatabaseConnection
     Public Function GetQuestionsLevel1() As List(Of QuestionData)
         Dim result As New List(Of QuestionData)
         ' Query to fetch questions and their options for Kategori A only
-        Dim query As String = "SELECT q.question_code, q.question_text, o.option_text, o.option_value " &
-                              "FROM ref_questions q " &
-                              "JOIN ref_question_options o ON q.question_code = o.question_code " &
+        Dim query As String = "SELECT q.code, q.text, o.option_text, o.option_value " &
+                              "FROM questions q " &
+                              "JOIN question_options o ON q.code = o.question_code " &
                               "WHERE q.kategori = 'A' AND q.is_active = TRUE " &
-                              "ORDER BY q.question_order ASC, o.option_order ASC"
+                              "ORDER BY q.display_order ASC, o.display_order ASC"
 
         Using conn As MySqlConnection = GetConnection()
             Try
@@ -147,8 +147,8 @@ Public Module DatabaseConnection
                         Dim currentQ As QuestionData = Nothing
 
                         While reader.Read()
-                            Dim code As String = reader("question_code").ToString()
-                            Dim text As String = reader("question_text").ToString()
+                            Dim code As String = reader("code").ToString()
+                            Dim questionText As String = reader("text").ToString()
                             Dim optText As String = reader("option_text").ToString()
                             Dim optVal As Integer = Convert.ToInt32(reader("option_value"))
 
@@ -156,7 +156,7 @@ Public Module DatabaseConnection
                             If code <> currentCode Then
                                 currentQ = New QuestionData With {
                                     .QuestionCode = code,
-                                    .QuestionText = text,
+                                    .QuestionText = questionText,
                                     .Options = New List(Of QuestionOption)()
                                 }
                                 result.Add(currentQ)

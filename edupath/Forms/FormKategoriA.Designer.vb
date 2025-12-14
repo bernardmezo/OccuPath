@@ -49,7 +49,7 @@ Partial Class FormKategoriA
         lblTitle.Name = "lblTitle"
         lblTitle.Size = New Size(280, 30)
         lblTitle.TabIndex = 1
-        lblTitle.Text = "?? KATEGORI A — DATA DIRI"
+        lblTitle.Text = "KATEGORI A - DATA DIRI"
         ' 
         ' lblProgress
         ' 
@@ -102,7 +102,7 @@ Partial Class FormKategoriA
         lblInstruction.Name = "lblInstruction"
         lblInstruction.Size = New Size(160, 19)
         lblInstruction.TabIndex = 0
-        lblInstruction.Text = "?? Pilih jawaban Anda:"
+        lblInstruction.Text = "Pilih jawaban Anda:"
         ' 
         ' cboAnswer
         ' 
@@ -153,7 +153,7 @@ Partial Class FormKategoriA
         btnCancel.Name = "btnCancel"
         btnCancel.Size = New Size(140, 45)
         btnCancel.TabIndex = 8
-        btnCancel.Text = "? Batal"
+        btnCancel.Text = "Batal"
         btnCancel.UseVisualStyleBackColor = False
         ' 
         ' FormKategoriA

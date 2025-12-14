@@ -56,11 +56,15 @@ Public Class FormDashboard
     End Sub
 
     Private Sub btnHistory_Click(sender As Object, e As EventArgs) Handles btnHistory.Click
-        MessageBox.Show("Fitur History akan segera ditambahkan dalam update berikutnya.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Dim historyForm As New FormHistory(_userId)
+        historyForm.ShowDialog()
+        LoadUserStatistics() ' Refresh statistics after viewing history
     End Sub
 
     Private Sub btnProfile_Click(sender As Object, e As EventArgs) Handles btnProfile.Click
-        MessageBox.Show("Fitur Profile Management akan segera ditambahkan.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Dim profileForm As New FormProfile(_userId, _username)
+        profileForm.ShowDialog()
+        LoadUserStatistics() ' Refresh statistics
     End Sub
 
     Private Sub btnLogout_Click(sender As Object, e As EventArgs) Handles btnLogout.Click

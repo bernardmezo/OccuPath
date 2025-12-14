@@ -49,7 +49,7 @@ Partial Class FormKategoriB
         lblTitle.Name = "lblTitle"
         lblTitle.Size = New Size(320, 30)
         lblTitle.TabIndex = 1
-        lblTitle.Text = "🎓 KATEGORI B — AKADEMIS"
+        lblTitle.Text = "KATEGORI B - AKADEMIS"
         ' 
         ' lblProgress
         ' 
@@ -102,7 +102,7 @@ Partial Class FormKategoriB
         lblInstruction.Name = "lblInstruction"
         lblInstruction.Size = New Size(160, 19)
         lblInstruction.TabIndex = 0
-        lblInstruction.Text = "💡 Pilih jawaban Anda:"
+        lblInstruction.Text = "Pilih jawaban Anda:"
         ' 
         ' cboAnswer
         ' 
@@ -153,7 +153,7 @@ Partial Class FormKategoriB
         btnBack.Name = "btnBack"
         btnBack.Size = New Size(180, 45)
         btnBack.TabIndex = 8
-        btnBack.Text = "↩ Kembali ke Kategori A"
+        btnBack.Text = "Kembali ke Kategori A"
         btnBack.UseVisualStyleBackColor = False
         ' 
         ' FormKategoriB

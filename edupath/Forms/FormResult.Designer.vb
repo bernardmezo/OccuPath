@@ -49,7 +49,7 @@ Partial Class FormResult
         lblTitle.Name = "lblTitle"
         lblTitle.Size = New Size(388, 45)
         lblTitle.TabIndex = 1
-        lblTitle.Text = "?? Hasil Analisis Karir Anda"
+        lblTitle.Text = "Hasil Analisis Karir Anda"
         ' 
         ' lblSubtitle
         ' 
@@ -92,7 +92,7 @@ Partial Class FormResult
         btnDashboard.Name = "btnDashboard"
         btnDashboard.Size = New Size(200, 45)
         btnDashboard.TabIndex = 5
-        btnDashboard.Text = "?? Kembali ke Dashboard"
+        btnDashboard.Text = "Kembali ke Dashboard"
         btnDashboard.UseVisualStyleBackColor = False
         ' 
         ' btnNewTest
@@ -106,7 +106,7 @@ Partial Class FormResult
         btnNewTest.Name = "btnNewTest"
         btnNewTest.Size = New Size(150, 45)
         btnNewTest.TabIndex = 6
-        btnNewTest.Text = "?? Tes Baru"
+        btnNewTest.Text = "Tes Baru"
         btnNewTest.UseVisualStyleBackColor = False
         ' 
         ' FormResult
