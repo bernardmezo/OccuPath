@@ -21,9 +21,9 @@ Partial Class FormAssessment
         panelHeader = New Panel()
         lblPageTitle = New Label()
         lblPageDescription = New Label()
+        panelProgressContainer = New Panel()
         lblProgress = New Label()
         progressBar = New ProgressBar()
-        panelProgressContainer = New Panel()
         lblProgressPercent = New Label()
         panelQuestions = New Panel()
         panelFooter = New Panel()
@@ -59,22 +59,22 @@ Partial Class FormAssessment
         ' lblPageTitle
         ' 
         lblPageTitle.AutoSize = True
-        lblPageTitle.Font = New Font("Segoe UI", 20.0F, FontStyle.Bold)
+        lblPageTitle.Font = New Font("Segoe UI", 20F, FontStyle.Bold)
         lblPageTitle.ForeColor = Color.FromArgb(CByte(44), CByte(62), CByte(80))
         lblPageTitle.Location = New Point(30, 25)
         lblPageTitle.Name = "lblPageTitle"
-        lblPageTitle.Size = New Size(350, 37)
+        lblPageTitle.Size = New Size(315, 37)
         lblPageTitle.TabIndex = 0
         lblPageTitle.Text = "?? Kategori A: Data Diri"
         ' 
         ' lblPageDescription
         ' 
         lblPageDescription.AutoSize = True
-        lblPageDescription.Font = New Font("Segoe UI", 11.0F)
+        lblPageDescription.Font = New Font("Segoe UI", 11F)
         lblPageDescription.ForeColor = Color.FromArgb(CByte(127), CByte(140), CByte(141))
         lblPageDescription.Location = New Point(30, 70)
         lblPageDescription.Name = "lblPageDescription"
-        lblPageDescription.Size = New Size(400, 20)
+        lblPageDescription.Size = New Size(284, 20)
         lblPageDescription.TabIndex = 1
         lblPageDescription.Text = "Silakan isi data diri Anda dengan lengkap"
         ' 
@@ -91,11 +91,11 @@ Partial Class FormAssessment
         ' lblProgress
         ' 
         lblProgress.AutoSize = True
-        lblProgress.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        lblProgress.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         lblProgress.ForeColor = Color.FromArgb(CByte(52), CByte(73), CByte(94))
         lblProgress.Location = New Point(0, 5)
         lblProgress.Name = "lblProgress"
-        lblProgress.Size = New Size(110, 15)
+        lblProgress.Size = New Size(99, 15)
         lblProgress.TabIndex = 0
         lblProgress.Text = "Halaman 1 dari 3"
         ' 
@@ -111,11 +111,11 @@ Partial Class FormAssessment
         ' lblProgressPercent
         ' 
         lblProgressPercent.AutoSize = True
-        lblProgressPercent.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        lblProgressPercent.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         lblProgressPercent.ForeColor = Color.FromArgb(CByte(41), CByte(128), CByte(185))
         lblProgressPercent.Location = New Point(865, 5)
         lblProgressPercent.Name = "lblProgressPercent"
-        lblProgressPercent.Size = New Size(35, 15)
+        lblProgressPercent.Size = New Size(31, 15)
         lblProgressPercent.TabIndex = 2
         lblProgressPercent.Text = "33%"
         lblProgressPercent.TextAlign = ContentAlignment.MiddleRight
@@ -150,7 +150,7 @@ Partial Class FormAssessment
         btnPrevious.Cursor = Cursors.Hand
         btnPrevious.FlatAppearance.BorderColor = Color.FromArgb(CByte(189), CByte(195), CByte(199))
         btnPrevious.FlatStyle = FlatStyle.Flat
-        btnPrevious.Font = New Font("Segoe UI", 11.0F)
+        btnPrevious.Font = New Font("Segoe UI", 11F)
         btnPrevious.ForeColor = Color.FromArgb(CByte(52), CByte(73), CByte(94))
         btnPrevious.Location = New Point(30, 15)
         btnPrevious.Name = "btnPrevious"
@@ -165,7 +165,7 @@ Partial Class FormAssessment
         btnNext.Cursor = Cursors.Hand
         btnNext.FlatAppearance.BorderSize = 0
         btnNext.FlatStyle = FlatStyle.Flat
-        btnNext.Font = New Font("Segoe UI Semibold", 11.0F, FontStyle.Bold)
+        btnNext.Font = New Font("Segoe UI Semibold", 11F, FontStyle.Bold)
         btnNext.ForeColor = Color.White
         btnNext.Location = New Point(795, 15)
         btnNext.Name = "btnNext"
@@ -176,7 +176,7 @@ Partial Class FormAssessment
         ' 
         ' FormAssessment
         ' 
-        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(1000, 700)

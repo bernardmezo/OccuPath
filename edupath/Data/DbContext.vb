@@ -23,7 +23,7 @@ Namespace Data
         ''' </summary>
         Public Shared ReadOnly Property ConnectionString As String
             Get
-                Return $"Server={DB_SERVER};Port=3306;Database={DB_NAME};Uid={DB_USER};Pwd={DB_PASS};AllowPublicKeyRetrieval=True;CharSet=utf8;SslMode=Preferred;"
+                Return $"Server={DB_SERVER};Database={DB_NAME};Uid={DB_USER};Pwd={DB_PASS};SslMode=none;"
             End Get
         End Property
 
@@ -39,22 +39,11 @@ Namespace Data
         ''' </summary>
         Public Shared Function TestConnection() As Boolean
             Try
-                Using conn As New MySqlConnection(ConnectionString)
+                Using conn = CreateConnection()
                     conn.Open()
                     Return True
                 End Using
-            Catch ex As MySqlException
-                Dim errorMsg As String = $"MySQL ERROR [{ex.Number}]: {ex.Message}" & vbCrLf &
-                               $"Connection String: {ConnectionString}" & vbCrLf &
-                               $"Help: {ex.HelpLink}" & vbCrLf &
-                               $"Stack: {ex.StackTrace}"
-
-                MessageBox.Show(errorMsg, "MySQL Connection Error",
-                       MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Return False
             Catch ex As Exception
-                MessageBox.Show($"GENERAL ERROR: {ex.ToString()}",
-                       "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Return False
             End Try
         End Function

@@ -71,8 +71,19 @@ Public Class FormAssessment
     Private Function LoadQuestionsByCategory(conn As MySqlConnection, kategori As String) As List(Of Question)
         Dim questions As New List(Of Question)()
 
-        Dim sql = "SELECT code, text, question_type, display_order FROM questions " &
-                  "WHERE kategori = @kategori AND is_active = TRUE ORDER BY display_order"
+        'Dim sql = "SELECT code, text, question_type, display_order FROM questions " &
+        '          "WHERE kategori = @kategori AND is_active = TRUE ORDER BY display_order"
+
+        Dim sql = "SELECT question_code AS code, question_text AS text,
+                    CASE 
+                        WHEN question_type = 'single_choice' THEN 'choice'
+                        WHEN question_type = 'multiple_choice' THEN 'choice'
+                        ELSE question_type
+                    END AS question_type, question_order AS display_order
+                    FROM ref_questions
+                    WHERE kategori = @kategori AND is_active = 1
+                    ORDER BY question_order"
+
 
         Using cmd As New MySqlCommand(sql, conn)
             cmd.Parameters.AddWithValue("@kategori", kategori)
@@ -100,8 +111,14 @@ Public Class FormAssessment
     Private Function LoadQuestionOptions(conn As MySqlConnection, questionCode As String) As List(Of Models.QuestionOption)
         Dim options As New List(Of Models.QuestionOption)()
 
-        Dim sql = "SELECT option_text, option_value, display_order FROM question_options " &
-                  "WHERE question_code = @code ORDER BY display_order"
+        'Dim sql = "SELECT option_text, option_value, display_order FROM question_options " &
+        '          "WHERE question_code = @code ORDER BY display_order"
+
+        Dim sql = "SELECT option_text, option_value, option_order AS display_order
+                    FROM ref_question_options
+                    WHERE question_code = @code
+                    ORDER BY option_order"
+
 
         Using cmd As New MySqlCommand(sql, conn)
             cmd.Parameters.AddWithValue("@code", questionCode)
@@ -109,7 +126,7 @@ Public Class FormAssessment
                 While reader.Read()
                     options.Add(New Models.QuestionOption() With {
                         .Text = reader.GetString("option_text"),
-                        .Value = reader.GetInt32("option_value"),
+                        .Value = CDbl(reader.GetDecimal("option_value")),
                         .DisplayOrder = reader.GetInt32("display_order")
                     })
                 End While
@@ -454,7 +471,16 @@ Public Class FormAssessment
                         Return False
                     End If
 
-                    dataStore(question.Code) = selectedValue
+                    ' cari option_value berdasarkan skala yang dipilih
+                    Dim selectedOption = question.Options.
+                        FirstOrDefault(Function(o) o.DisplayOrder = selectedValue)
+
+                    If selectedOption Is Nothing Then
+                        Return False
+                    End If
+
+                    dataStore(question.Code) = selectedOption.Value
+
             End Select
         Next
 
@@ -525,10 +551,18 @@ Public Class FormAssessment
     ' Helper class for ComboBox items
     Private Class QuestionOptionItem
         Public Property Text As String
-        Public Property Value As Integer
+        Public Property Value As Double
 
         Public Overrides Function ToString() As String
             Return Text
         End Function
     End Class
+
+    Private Sub panelHeader_Paint(sender As Object, e As PaintEventArgs) Handles panelHeader.Paint
+
+    End Sub
+
+    Private Sub panelQuestions_Paint(sender As Object, e As PaintEventArgs) Handles panelQuestions.Paint
+
+    End Sub
 End Class

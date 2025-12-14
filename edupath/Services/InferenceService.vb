@@ -1,4 +1,4 @@
-' ============================================
+﻿' ============================================
 ' Service: InferenceService
 ' Forward Chaining dengan Certainty Factor
 ' ============================================
@@ -43,7 +43,7 @@ Namespace Services
         ''' </summary>
         Public Class InferenceResult
             Public Property ProfilLulusan As ProfilLulusan
-            Public Property CertaintyFactor As Double
+            Public Property CertaintyFactor As Double ' raw CF (0–1)
             Public Property MatchedRules As List(Of String)
             Public Property Ranking As Integer
             Public Property Explanation As String
@@ -51,6 +51,13 @@ Namespace Services
             Public Sub New()
                 MatchedRules = New List(Of String)()
             End Sub
+        End Class
+
+        Public Class ProfilModifier
+            Public Property ProfilLulusanId As Integer
+            Public Property KategoriACode As String
+            Public Property OptionValue As Double
+            Public Property Modifier As Double
         End Class
 
         ''' <summary>
@@ -84,6 +91,9 @@ Namespace Services
                 ' 3. Ambil semua rules dengan kondisi
                 Dim rules = GetAllRulesWithConditions()
 
+                ' Ambil modifier kategori A
+                Dim modifiers = GetProfilModifiers()
+
                 ' 4. Forward Chaining - evaluasi setiap profil
                 For Each profil In profilList
                     Dim result As New InferenceResult() With {
@@ -101,6 +111,23 @@ Namespace Services
                             result.MatchedRules.Add(rule.RuleCode)
                             ' Kombinasi CF: CF_combined = CF1 + CF2 * (1 - CF1)
                             cfCombined = CombineCF(cfCombined, cfRuleInstance)
+                        End If
+                    Next
+
+                    ' Terapkan modifier kategori A 
+                    ' cek setiap kode di kategori A yang user pilih
+                    For Each kvp In personalData
+                        ' cari modifier untuk profil ini + question code
+                        Dim modifierEntry = modifiers.
+                            FirstOrDefault(Function(m) m.ProfilLulusanId = profil.Id AndAlso
+                                                     m.KategoriACode = kvp.Key AndAlso
+                                                     Math.Abs(m.OptionValue - kvp.Value) < 0.001)
+
+                        ' weighted average
+                        If modifierEntry IsNot Nothing Then
+                            ' Modifier hanya berpengaruh 30%
+                            cfCombined = cfCombined * (0.7 + 0.3 * modifierEntry.Modifier)
+                            cfCombined = Math.Min(cfCombined, 1.0)
                         End If
                     Next
 
@@ -168,13 +195,37 @@ Namespace Services
 
                 ' Hitung CF user untuk kondisi ini (asumsi CF = 1.0 untuk input valid)
                 ' Untuk AND: ambil minimum
-                Dim cfCondition As Double = 1.0
+                Dim cfCondition As Double = factValue   ' ← CF user
                 cfPremis = Math.Min(cfPremis, cfCondition)
             Next
 
             ' CF Rule Instance = CF Premis * CF Rule
             Return cfPremis * rule.CfRule
         End Function
+
+        Private Function GetProfilModifiers() As List(Of ProfilModifier)
+            Dim result As New List(Of ProfilModifier)()
+
+            Using conn = DatabaseConnection.GetConnection()
+                conn.Open()
+                Dim sql = "SELECT profil_lulusan_id, kategori_a_code, option_value, modifier FROM profil_modifiers"
+                Using cmd As New MySqlCommand(sql, conn)
+                    Using reader = cmd.ExecuteReader()
+                        While reader.Read()
+                            result.Add(New ProfilModifier() With {
+                        .ProfilLulusanId = reader.GetInt32("profil_lulusan_id"),
+                        .KategoriACode = reader.GetString("kategori_a_code"),
+                        .OptionValue = reader.GetDouble("option_value"),
+                        .Modifier = reader.GetDouble("modifier")
+                    })
+                        End While
+                    End Using
+                End Using
+            End Using
+
+            Return result
+        End Function
+
 
         ''' <summary>
         ''' Kombinasi CF menggunakan rumus: CF_combined = CF1 + CF2 * (1 - CF1)
@@ -204,7 +255,7 @@ Namespace Services
 
             Using conn = DatabaseConnection.GetConnection()
                 conn.Open()
-                Dim sql = "SELECT id_profil AS id, nama_profil, deskripsi, kompetensi_utama AS skills_required FROM profil_lulusan"
+                Dim sql = "SELECT id, nama_profil, deskripsi, skills_required FROM profil_lulusan"
                 Using cmd As New MySqlCommand(sql, conn)
                     Using reader = cmd.ExecuteReader()
                         While reader.Read()
@@ -232,7 +283,7 @@ Namespace Services
                 conn.Open()
 
                 ' Ambil semua rules
-                Dim sqlRules = "SELECT id_rule AS id, kode_rule AS rule_code, profil_lulusan_id, cf_rule, deskripsi AS description FROM rules WHERE is_active = TRUE"
+                Dim sqlRules = "SELECT id, rule_code, profil_lulusan_id, cf_rule, description FROM rules WHERE is_active = TRUE"
                 Using cmdRules As New MySqlCommand(sqlRules, conn)
                     Using readerRules = cmdRules.ExecuteReader()
                         While readerRules.Read()
@@ -303,12 +354,14 @@ Namespace Services
 
                         ' 3. Insert results
                         For Each result In results
-                            Dim sqlResult = "INSERT INTO results (assessment_id, profil_lulusan_id, cf_percentage, ranking, matched_rules, explanation) " &
-                                            "VALUES (@assessmentId, @profilId, @cf, @ranking, @matchedRules, @explanation)"
+                            Dim sqlResult = "INSERT INTO results " &
+                                            "(assessment_id, profil_lulusan_id, cf_value, cf_percentage, ranking, matched_rules, explanation) " &
+                                            "VALUES (@assessmentId, @profilId, @cfValue, @cfPercent, @ranking, @matchedRules, @explanation)"
                             Using cmd As New MySqlCommand(sqlResult, conn, transaction)
                                 cmd.Parameters.AddWithValue("@assessmentId", assessmentId)
                                 cmd.Parameters.AddWithValue("@profilId", result.ProfilLulusan.Id)
-                                cmd.Parameters.AddWithValue("@cf", result.CertaintyFactor * 100)
+                                cmd.Parameters.AddWithValue("@cfValue", result.CertaintyFactor)
+                                cmd.Parameters.AddWithValue("@cfPercent", result.CertaintyFactor * 100)
                                 cmd.Parameters.AddWithValue("@ranking", result.Ranking)
                                 cmd.Parameters.AddWithValue("@matchedRules", String.Join(",", result.MatchedRules))
                                 cmd.Parameters.AddWithValue("@explanation", result.Explanation)
