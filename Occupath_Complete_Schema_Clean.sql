@@ -5,8 +5,8 @@ DROP TABLE IF EXISTS profil_modifiers;
 DROP TABLE IF EXISTS rule_conditions;
 DROP TABLE IF EXISTS rules;
 DROP TABLE IF EXISTS profil_lulusan;
-DROP TABLE IF EXISTS ref_question_options;
-DROP TABLE IF EXISTS ref_questions;
+DROP TABLE IF EXISTS question_options;
+DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS student_profiles;
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS users (
     INDEX idx_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT INTO users (username, password, full_name, email, role)
-VALUES ('testuser','dummyhash','Test User','test@occupath.com','student');
+VALUES ('testuser','dummyhash','Test User','test@occupath.com','student'),
+        ('testadmin','dummyhash','Test Admin','admin@occupath.com','admin');
+
 CREATE TABLE student_profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_user INT NOT NULL,
@@ -129,39 +131,39 @@ INSERT INTO profil_lulusan (nama_profil, deskripsi, skills_required, prospek_kar
  'Peneliti dalam bidang ilmu komputer dan informasi yang berkontribusi pada pengembangan pengetahuan.',
  'Research Methodology, Academic Writing, Data Analysis, Programming for Research, Publication',
  'Research Scientist, Academic Researcher, R&D Specialist, Technology Researcher');
-CREATE TABLE ref_questions (
+CREATE TABLE questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    question_code VARCHAR(20) UNIQUE,
+    code VARCHAR(20) UNIQUE,
     kategori ENUM('A','B','C'),
-    question_text TEXT,
-    question_type ENUM('single_choice', 'multiple_choice', 'scale', 'text') DEFAULT 'single_choice',
-    question_order INT,
+    text TEXT,
+    question_type ENUM('choice', 'multiple_choice', 'scale', 'text') DEFAULT 'choice',
+    display_order INT,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
-INSERT INTO ref_questions VALUES
-(NULL,'F_A1','A','Apa jenis kelamin Anda?','single_choice',1,1,NOW()),
-(NULL,'F_A2','A','Apa status pendidikan Anda saat ini?','single_choice',2,1,NOW()),
-(NULL,'F_A3','A','Apa program studi yang sedang Anda tempuh?','single_choice',3,1,NOW()),
-(NULL,'F_A4','A','Anda saat ini berada di semester berapa?','single_choice',4,1,NOW()),
-(NULL,'F_A5','A','Apa status mahasiswa Anda?','single_choice',5,1,NOW()),
-(NULL,'F_A6','A','Apa latar belakang pendidikan Anda sebelum kuliah?','single_choice',6,1,NOW()),
-(NULL,'F_A7','A','Apa alasan utama Anda memilih program studi ini?','single_choice',7,1,NOW()),
-(NULL,'F_A8','A','Apa tujuan utama Anda kuliah?','single_choice',8,1,NOW()),
-(NULL,'F_A9','A','Metode belajar apa yang paling Anda sukai?','single_choice',9,1,NOW()),
+INSERT INTO questions VALUES
+(NULL,'F_A1','A','Apa jenis kelamin Anda?','choice',1,1,NOW()),
+(NULL,'F_A2','A','Apa status pendidikan Anda saat ini?','choice',2,1,NOW()),
+(NULL,'F_A3','A','Apa program studi yang sedang Anda tempuh?','choice',3,1,NOW()),
+(NULL,'F_A4','A','Anda saat ini berada di semester berapa?','choice',4,1,NOW()),
+(NULL,'F_A5','A','Apa status mahasiswa Anda?','choice',5,1,NOW()),
+(NULL,'F_A6','A','Apa latar belakang pendidikan Anda sebelum kuliah?','choice',6,1,NOW()),
+(NULL,'F_A7','A','Apa alasan utama Anda memilih program studi ini?','choice',7,1,NOW()),
+(NULL,'F_A8','A','Apa tujuan utama Anda kuliah?','choice',8,1,NOW()),
+(NULL,'F_A9','A','Metode belajar apa yang paling Anda sukai?','choice',9,1,NOW()),
 (NULL,'F_A10','A','Seberapa tinggi motivasi belajar Anda saat ini?','scale',10,1,NOW());
-INSERT INTO ref_questions VALUES
-(NULL,'F_B1','B','Minat pada pemrograman?','scale',11,1,NOW()),
+INSERT INTO questions VALUES
+(NULL,'F_B1','B','Kemampuan pemrograman','scale',11,1,NOW()),
 (NULL,'F_B2','B','Kepercayaan diri kemampuan coding?','scale',12,1,NOW()),
-(NULL,'F_B3','B','Minat database & SQL?','scale',13,1,NOW()),
-(NULL,'F_B4','B','Kemampuan analisis data?','scale',14,1,NOW()),
-(NULL,'F_B5','B','Minat machine learning / AI?','scale',15,1,NOW()),
+(NULL,'F_B3','B','Kemampuan database & SQL','scale',13,1,NOW()),
+(NULL,'F_B4','B','Kemampuan analisis data','scale',14,1,NOW()),
+(NULL,'F_B5','B','Kemampuan machine learning / AI','scale',15,1,NOW()),
 (NULL,'F_B6','B','Penguasaan software teknis (tooling)?','scale',16,1,NOW()),
 (NULL,'F_B7','B','Pengalaman proyek praktis?','scale',17,1,NOW()),
-(NULL,'F_B8','B','Minat jaringan (networking)?','scale',18,1,NOW()),
-(NULL,'F_B9','B','Minat keamanan siber?','scale',19,1,NOW()),
-(NULL,'F_B10','B','Minat desain UI/UX atau desain grafis?','scale',20,1,NOW());
-INSERT INTO ref_questions VALUES
+(NULL,'F_B8','B','Kemampuan jaringan (networking)?','scale',18,1,NOW()),
+(NULL,'F_B9','B','Kemampuan keamanan siber?','scale',19,1,NOW()),
+(NULL,'F_B10','B','Kemampuan desain UI/UX atau desain grafis?','scale',20,1,NOW());
+INSERT INTO questions VALUES
 (NULL,'F_C56','C','Saya mampu menganalisis masalah dengan cepat dan tepat.','scale',21,1,NOW()),
 (NULL,'F_C57','C','Saya nyaman bekerja dengan angka dan analisis numerik.','scale',22,1,NOW()),
 (NULL,'F_C58','C','Saya berpikir secara logis dan sistematis ketika menyelesaikan masalah.','scale',23,1,NOW()),
@@ -189,28 +191,28 @@ INSERT INTO ref_questions VALUES
 (NULL,'F_C84','C','Saya memiliki ketertarikan kuat pada desain visual dan estetika.','scale',45,1,NOW()),
 (NULL,'F_C85','C','Saya memiliki ketertarikan pada pengalaman pengguna (UX).','scale',46,1,NOW()),
 (NULL,'F_C86','C','Saya peka terhadap kebutuhan dan kenyamanan pengguna (user empathy).','scale',47,1,NOW());
-CREATE TABLE ref_question_options (
+CREATE TABLE question_options (
     id INT AUTO_INCREMENT PRIMARY KEY,
     question_code VARCHAR(20),
     option_text VARCHAR(100),
     option_value DECIMAL(5,2),
-    option_order INT,
+    display_order INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (question_code) REFERENCES ref_questions(question_code)
+    FOREIGN KEY (question_code) REFERENCES questions(code)
 ) ENGINE=InnoDB;
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A1', 'Laki-laki', 1.00, 1),
 ('F_A1', 'Perempuan', 2.00, 2);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A2', 'Mahasiswa Aktif', 1.00, 1),
 ('F_A2', 'Mahasiswa Non-Aktif / Drop Out', 2.00, 2),
 ('F_A2', 'Mahasiswa Cuti', 3.00, 3);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A3', 'Teknik Informatika', 1.00, 1),
 ('F_A3', 'Teknik Multimedia Digital', 2.00, 2),
 ('F_A3', 'Teknik Multimedia dan Jaringan', 3.00, 3),
 ('F_A3', 'Teknik Komputer Jaringan', 4.00, 4);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A4', 'Semester 1', 1.00, 1),
 ('F_A4', 'Semester 2', 2.00, 2),
 ('F_A4', 'Semester 3', 3.00, 3),
@@ -218,53 +220,53 @@ INSERT INTO ref_question_options (question_code, option_text, option_value, opti
 ('F_A4', 'Semester 5', 5.00, 5),
 ('F_A4', 'Semester 6', 6.00, 6),
 ('F_A4', 'Semester 6+ (Lebih dari 6)', 7.00, 7);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A5', 'Reguler', 1.00, 1),
 ('F_A5', 'Paralel', 2.00, 2),
 ('F_A5', 'Eksekutif', 3.00, 3);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A6', 'SMA IPA', 1.00, 1),
 ('F_A6', 'SMA IPS', 2.00, 2),
 ('F_A6', 'SMK Teknik', 3.00, 3),
 ('F_A6', 'SMK Non-Teknik', 4.00, 4),
 ('F_A6', 'Lainnya', 5.00, 5);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A7', 'Minat & Bakat Pribadi', 1.00, 1),
 ('F_A7', 'Prospek Kerja yang Baik', 2.00, 2),
 ('F_A7', 'Saran Orang Tua / Keluarga', 3.00, 3),
 ('F_A7', 'Ikut-ikutan Teman', 4.00, 4),
 ('F_A7', 'Pilihan Cadangan', 5.00, 5);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A8', 'Meningkatkan Karir', 1.00, 1),
 ('F_A8', 'Mendapatkan Gelar', 2.00, 2),
 ('F_A8', 'Menambah Ilmu & Skill', 3.00, 3),
 ('F_A8', 'Memperluas Relasi', 4.00, 4),
 ('F_A8', 'Mengisi Waktu', 5.00, 5);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A9', 'Diskusi', 1.00, 1),
 ('F_A9', 'Membaca', 2.00, 2),
 ('F_A9', 'Praktik langsung', 3.00, 3),
 ('F_A9', 'Online learning', 4.00, 4);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order) VALUES
+INSERT INTO question_options (question_code, option_text, option_value, display_order) VALUES
 ('F_A10', '1 - Sangat Rendah', 1.00, 1),
 ('F_A10', '2 - Rendah', 2.00, 2),
 ('F_A10', '3 - Cukup', 3.00, 3),
 ('F_A10', '4 - Tinggi', 4.00, 4),
 ('F_A10', '5 - Sangat Tinggi', 5.00, 5);
-INSERT INTO ref_question_options (question_code, option_text, option_value, option_order)
-SELECT question_code,'1',0.00,1 FROM ref_questions 
+INSERT INTO question_options (question_code, option_text, option_value, display_order)
+SELECT question_code,'1',0.00,1 FROM questions 
 WHERE question_type='scale' AND (kategori='B' OR kategori='C')
 UNION ALL
-SELECT question_code,'2',0.25,2 FROM ref_questions 
+SELECT question_code,'2',0.25,2 FROM questions 
 WHERE question_type='scale' AND (kategori='B' OR kategori='C')
 UNION ALL
-SELECT question_code,'3',0.50,3 FROM ref_questions 
+SELECT question_code,'3',0.50,3 FROM questions 
 WHERE question_type='scale' AND (kategori='B' OR kategori='C')
 UNION ALL
-SELECT question_code,'4',0.75,4 FROM ref_questions 
+SELECT question_code,'4',0.75,4 FROM questions 
 WHERE question_type='scale' AND (kategori='B' OR kategori='C')
 UNION ALL
-SELECT question_code,'5',1.00,5 FROM ref_questions 
+SELECT question_code,'5',1.00,5 FROM questions 
 WHERE question_type='scale' AND (kategori='B' OR kategori='C');
 CREATE TABLE rules (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -332,7 +334,7 @@ CREATE TABLE rule_conditions (
     threshold_value DECIMAL(5,2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (rule_id) REFERENCES rules(id),
-    FOREIGN KEY (question_code) REFERENCES ref_questions(question_code)
+    FOREIGN KEY (question_code) REFERENCES questions(code)
 ) ENGINE=InnoDB;
 INSERT INTO rule_conditions (rule_id, question_code, operator, threshold_value) VALUES
 (1, 'F_B1', '>=', 0.75),
