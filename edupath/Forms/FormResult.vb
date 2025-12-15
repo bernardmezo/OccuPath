@@ -152,7 +152,7 @@ Public Class FormResult
         ' Skills tag
         If Not String.IsNullOrEmpty(result.ProfilLulusan.KompetensiUtama) Then
             Dim lblSkills As New Label() With {
-                .Text = $"?? Skills: {result.ProfilLulusan.KompetensiUtama}",
+                .Text = $"Skills: {result.ProfilLulusan.KompetensiUtama}",
                 .Font = New Font("Segoe UI", 8.5F, FontStyle.Regular),
                 .ForeColor = Color.FromArgb(41, 128, 185),
                 .AutoSize = False,

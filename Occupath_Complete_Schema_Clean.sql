@@ -1,6 +1,7 @@
 ﻿DROP TABLE IF EXISTS results;
 DROP TABLE IF EXISTS responses;
 DROP TABLE IF EXISTS assessments;
+DROP TABLE IF EXISTS profil_modifiers;
 DROP TABLE IF EXISTS rule_conditions;
 DROP TABLE IF EXISTS rules;
 DROP TABLE IF EXISTS profil_lulusan;
