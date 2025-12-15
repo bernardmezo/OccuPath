@@ -55,30 +55,6 @@ Public Class FormUserManagement
             .Width = 200
         })
 
-        ' NIM Column
-        dgvUsers.Columns.Add(New DataGridViewTextBoxColumn() With {
-            .Name = "colNIM",
-            .HeaderText = "NIM",
-            .DataPropertyName = "NIM",
-            .Width = 100
-        })
-
-        ' Prodi Column
-        dgvUsers.Columns.Add(New DataGridViewTextBoxColumn() With {
-            .Name = "colProdi",
-            .HeaderText = "Prodi",
-            .DataPropertyName = "Prodi",
-            .Width = 60
-        })
-
-        ' Semester Column
-        dgvUsers.Columns.Add(New DataGridViewTextBoxColumn() With {
-            .Name = "colSemester",
-            .HeaderText = "Sem",
-            .DataPropertyName = "Semester",
-            .Width = 50
-        })
-
         ' Role Column
         dgvUsers.Columns.Add(New DataGridViewTextBoxColumn() With {
             .Name = "colRole",
@@ -144,7 +120,7 @@ Public Class FormUserManagement
             Using conn = DatabaseConnection.GetConnection()
                 conn.Open()
 
-                Dim sql = "SELECT id, username, full_name, email, nim, prodi, semester, role, created_at " &
+                Dim sql = "SELECT id, username, full_name, email, role, created_at " &
                           "FROM users ORDER BY created_at DESC"
 
                 Dim dt As New DataTable()
@@ -162,9 +138,6 @@ Public Class FormUserManagement
                         .Username = row("username").ToString(),
                         .FullName = row("full_name").ToString(),
                         .Email = If(IsDBNull(row("email")), "", row("email").ToString()),
-                        .NIM = If(IsDBNull(row("nim")), "", row("nim").ToString()),
-                        .Prodi = If(IsDBNull(row("prodi")), "", row("prodi").ToString()),
-                        .Semester = If(IsDBNull(row("semester")), "", row("semester").ToString()),
                         .Role = row("role").ToString(),
                         .CreatedAt = Convert.ToDateTime(row("created_at"))
                     })
@@ -212,9 +185,8 @@ Public Class FormUserManagement
                 conn.Open()
 
                 ' Get user data
-                Dim sql = "SELECT username, full_name, email, nim, prodi, semester, role FROM users WHERE id = @userId"
-                Dim username, fullName, email, nim, prodi, role As String
-                Dim semester As Integer = 1
+                Dim sql = "SELECT username, full_name, email, role FROM users WHERE id = @userId"
+                Dim username, fullName, email, role As String
 
                 Using cmd As New MySqlCommand(sql, conn)
                     cmd.Parameters.AddWithValue("@userId", userId)
@@ -223,9 +195,6 @@ Public Class FormUserManagement
                             username = reader.GetString("username")
                             fullName = reader.GetString("full_name")
                             email = If(reader.IsDBNull(reader.GetOrdinal("email")), "", reader.GetString("email"))
-                            nim = If(reader.IsDBNull(reader.GetOrdinal("nim")), "", reader.GetString("nim"))
-                            prodi = If(reader.IsDBNull(reader.GetOrdinal("prodi")), "TI", reader.GetString("prodi"))
-                            semester = If(reader.IsDBNull(reader.GetOrdinal("semester")), 1, reader.GetInt32("semester"))
                             role = reader.GetString("role")
                         Else
                             MessageBox.Show("User tidak ditemukan!", "Kesalahan", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -235,7 +204,7 @@ Public Class FormUserManagement
                 End Using
 
                 ' Show edit dialog
-                Dim editForm As New FormUserEdit(userId, username, fullName, email, nim, prodi, semester, role)
+                Dim editForm As New FormUserEdit(userId, username, fullName, email, role)
                 If editForm.ShowDialog() = DialogResult.OK Then
                     LoadUsers()
                     MessageBox.Show("User berhasil diperbarui!", "Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -306,8 +275,7 @@ Public Class FormUserManagement
                 Dim filtered = users.Where(Function(u)
                                                Return u.Username.ToLower().Contains(searchText) OrElse
                                                       u.FullName.ToLower().Contains(searchText) OrElse
-                                                      u.Email.ToLower().Contains(searchText) OrElse
-                                                      u.NIM.ToLower().Contains(searchText)
+                                                      u.Email.ToLower().Contains(searchText)
                                            End Function).ToList()
                 dgvUsers.DataSource = filtered
                 lblTotalUsers.Text = $"Menampilkan {filtered.Count} dari {users.Count} user"
@@ -324,9 +292,6 @@ Public Class FormUserManagement
         Public Property Username As String
         Public Property FullName As String
         Public Property Email As String
-        Public Property NIM As String
-        Public Property Prodi As String
-        Public Property Semester As String
         Public Property Role As String
         Public Property CreatedAt As DateTime
     End Class

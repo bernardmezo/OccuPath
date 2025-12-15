@@ -6,8 +6,7 @@ Imports MySql.Data.MySqlClient
 Public Class FormUserEdit
     Private _userId As Integer
 
-    Public Sub New(userId As Integer, username As String, fullName As String, email As String,
-                   nim As String, prodi As String, semester As Integer, role As String)
+    Public Sub New(userId As Integer, username As String, fullName As String, email As String, role As String)
         InitializeComponent()
         _userId = userId
         
@@ -16,17 +15,6 @@ Public Class FormUserEdit
         txtUsername.ReadOnly = True ' Username tidak bisa diubah
         txtFullName.Text = fullName
         txtEmail.Text = email
-        txtNIM.Text = nim
-        
-        ' Setup Prodi ComboBox
-        cmbProdi.Items.Clear()
-        cmbProdi.Items.AddRange(New String() {"TI", "TMD", "TMJ"})
-        cmbProdi.SelectedItem = prodi
-        
-        ' Setup Semester
-        nudSemester.Minimum = 1
-        nudSemester.Maximum = 14
-        nudSemester.Value = semester
         
         ' Setup Role ComboBox
         cmbRole.Items.Clear()
@@ -50,8 +38,7 @@ Public Class FormUserEdit
                 Dim sql As String
                 If String.IsNullOrWhiteSpace(txtPassword.Text) Then
                     ' Update tanpa password
-                    sql = "UPDATE users SET full_name = @fullName, email = @email, nim = @nim, " &
-                          "prodi = @prodi, semester = @semester, role = @role WHERE id = @userId"
+                    sql = "UPDATE users SET full_name = @fullName, email = @email, role = @role WHERE id = @userId"
                 Else
                     ' Update dengan password
                     If txtPassword.Text.Length < 6 Then
@@ -59,17 +46,13 @@ Public Class FormUserEdit
                         txtPassword.Focus()
                         Return
                     End If
-                    sql = "UPDATE users SET full_name = @fullName, email = @email, nim = @nim, " &
-                          "prodi = @prodi, semester = @semester, role = @role, password = @password WHERE id = @userId"
+                    sql = "UPDATE users SET full_name = @fullName, email = @email, role = @role, password = @password WHERE id = @userId"
                 End If
 
                 Using cmd As New MySqlCommand(sql, conn)
                     cmd.Parameters.AddWithValue("@userId", _userId)
                     cmd.Parameters.AddWithValue("@fullName", txtFullName.Text.Trim())
                     cmd.Parameters.AddWithValue("@email", If(String.IsNullOrWhiteSpace(txtEmail.Text), DBNull.Value, txtEmail.Text.Trim()))
-                    cmd.Parameters.AddWithValue("@nim", If(String.IsNullOrWhiteSpace(txtNIM.Text), DBNull.Value, txtNIM.Text.Trim()))
-                    cmd.Parameters.AddWithValue("@prodi", cmbProdi.SelectedItem.ToString())
-                    cmd.Parameters.AddWithValue("@semester", nudSemester.Value)
                     cmd.Parameters.AddWithValue("@role", cmbRole.SelectedItem.ToString())
                     
                     If Not String.IsNullOrWhiteSpace(txtPassword.Text) Then

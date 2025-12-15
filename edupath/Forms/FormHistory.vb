@@ -57,11 +57,11 @@ Public Class FormHistory
                             Dim medal As String = ""
                             Select Case rowIndex
                                 Case 1
-                                    medal = "??"
+                                    medal = "1"
                                 Case 2
-                                    medal = "??"
+                                    medal = "2"
                                 Case 3
-                                    medal = "??"
+                                    medal = "3"
                             End Select
 
                             Dim profileName = If(reader.IsDBNull(reader.GetOrdinal("nama_profil")), "N/A", reader.GetString("nama_profil"))

@@ -32,18 +32,11 @@ Partial Class FormUserAdd
         Me.txtFullName = New System.Windows.Forms.TextBox()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.txtEmail = New System.Windows.Forms.TextBox()
-        Me.Label5 = New System.Windows.Forms.Label()
-        Me.txtNIM = New System.Windows.Forms.TextBox()
-        Me.Label6 = New System.Windows.Forms.Label()
-        Me.cmbProdi = New System.Windows.Forms.ComboBox()
-        Me.Label7 = New System.Windows.Forms.Label()
-        Me.nudSemester = New System.Windows.Forms.NumericUpDown()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.cmbRole = New System.Windows.Forms.ComboBox()
         Me.btnSave = New System.Windows.Forms.Button()
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.Panel1.SuspendLayout()
-        CType(Me.nudSemester, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Panel1
@@ -140,70 +133,14 @@ Partial Class FormUserAdd
         Me.txtEmail.Size = New System.Drawing.Size(320, 25)
         Me.txtEmail.TabIndex = 8
         '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Font = New System.Drawing.Font("Segoe UI", 10.0!)
-        Me.Label5.Location = New System.Drawing.Point(30, 220)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(39, 19)
-        Me.Label5.TabIndex = 9
-        Me.Label5.Text = "NIM:"
-        '
-        'txtNIM
-        '
-        Me.txtNIM.Font = New System.Drawing.Font("Segoe UI", 10.0!)
-        Me.txtNIM.Location = New System.Drawing.Point(150, 217)
-        Me.txtNIM.Name = "txtNIM"
-        Me.txtNIM.Size = New System.Drawing.Size(320, 25)
-        Me.txtNIM.TabIndex = 10
-        '
-        'Label6
-        '
-        Me.Label6.AutoSize = True
-        Me.Label6.Font = New System.Drawing.Font("Segoe UI", 10.0!)
-        Me.Label6.Location = New System.Drawing.Point(30, 255)
-        Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(97, 19)
-        Me.Label6.TabIndex = 11
-        Me.Label6.Text = "Program Studi:"
-        '
-        'cmbProdi
-        '
-        Me.cmbProdi.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbProdi.Font = New System.Drawing.Font("Segoe UI", 10.0!)
-        Me.cmbProdi.FormattingEnabled = True
-        Me.cmbProdi.Location = New System.Drawing.Point(150, 252)
-        Me.cmbProdi.Name = "cmbProdi"
-        Me.cmbProdi.Size = New System.Drawing.Size(320, 25)
-        Me.cmbProdi.TabIndex = 12
-        '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Font = New System.Drawing.Font("Segoe UI", 10.0!)
-        Me.Label7.Location = New System.Drawing.Point(30, 290)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(69, 19)
-        Me.Label7.TabIndex = 13
-        Me.Label7.Text = "Semester:"
-        '
-        'nudSemester
-        '
-        Me.nudSemester.Font = New System.Drawing.Font("Segoe UI", 10.0!)
-        Me.nudSemester.Location = New System.Drawing.Point(150, 288)
-        Me.nudSemester.Name = "nudSemester"
-        Me.nudSemester.Size = New System.Drawing.Size(120, 25)
-        Me.nudSemester.TabIndex = 14
-        '
         'Label8
         '
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Segoe UI", 10.0!)
-        Me.Label8.Location = New System.Drawing.Point(30, 325)
+        Me.Label8.Location = New System.Drawing.Point(30, 220)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(45, 19)
-        Me.Label8.TabIndex = 15
+        Me.Label8.TabIndex = 9
         Me.Label8.Text = "Peran:"
         '
         'cmbRole
@@ -211,10 +148,10 @@ Partial Class FormUserAdd
         Me.cmbRole.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbRole.Font = New System.Drawing.Font("Segoe UI", 10.0!)
         Me.cmbRole.FormattingEnabled = True
-        Me.cmbRole.Location = New System.Drawing.Point(150, 322)
+        Me.cmbRole.Location = New System.Drawing.Point(150, 217)
         Me.cmbRole.Name = "cmbRole"
         Me.cmbRole.Size = New System.Drawing.Size(320, 25)
-        Me.cmbRole.TabIndex = 16
+        Me.cmbRole.TabIndex = 10
         '
         'btnSave
         '
@@ -224,10 +161,10 @@ Partial Class FormUserAdd
         Me.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnSave.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold)
         Me.btnSave.ForeColor = System.Drawing.Color.White
-        Me.btnSave.Location = New System.Drawing.Point(250, 380)
+        Me.btnSave.Location = New System.Drawing.Point(250, 280)
         Me.btnSave.Name = "btnSave"
         Me.btnSave.Size = New System.Drawing.Size(100, 40)
-        Me.btnSave.TabIndex = 17
+        Me.btnSave.TabIndex = 11
         Me.btnSave.Text = "Simpan"
         Me.btnSave.UseVisualStyleBackColor = False
         '
@@ -239,10 +176,10 @@ Partial Class FormUserAdd
         Me.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnCancel.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold)
         Me.btnCancel.ForeColor = System.Drawing.Color.White
-        Me.btnCancel.Location = New System.Drawing.Point(370, 380)
+        Me.btnCancel.Location = New System.Drawing.Point(370, 280)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(100, 40)
-        Me.btnCancel.TabIndex = 18
+        Me.btnCancel.TabIndex = 12
         Me.btnCancel.Text = "Batal"
         Me.btnCancel.UseVisualStyleBackColor = False
         '
@@ -251,17 +188,11 @@ Partial Class FormUserAdd
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.White
-        Me.ClientSize = New System.Drawing.Size(500, 450)
+        Me.ClientSize = New System.Drawing.Size(500, 350)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnSave)
         Me.Controls.Add(Me.cmbRole)
         Me.Controls.Add(Me.Label8)
-        Me.Controls.Add(Me.nudSemester)
-        Me.Controls.Add(Me.Label7)
-        Me.Controls.Add(Me.cmbProdi)
-        Me.Controls.Add(Me.Label6)
-        Me.Controls.Add(Me.txtNIM)
-        Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.txtEmail)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.txtFullName)
@@ -279,7 +210,6 @@ Partial Class FormUserAdd
         Me.Text = "Tambah User Baru"
         Me.Panel1.ResumeLayout(False)
         Me.Panel1.PerformLayout()
-        CType(Me.nudSemester, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -295,12 +225,6 @@ Partial Class FormUserAdd
     Friend WithEvents txtFullName As TextBox
     Friend WithEvents Label4 As Label
     Friend WithEvents txtEmail As TextBox
-    Friend WithEvents Label5 As Label
-    Friend WithEvents txtNIM As TextBox
-    Friend WithEvents Label6 As Label
-    Friend WithEvents cmbProdi As ComboBox
-    Friend WithEvents Label7 As Label
-    Friend WithEvents nudSemester As NumericUpDown
     Friend WithEvents Label8 As Label
     Friend WithEvents cmbRole As ComboBox
     Friend WithEvents btnSave As Button

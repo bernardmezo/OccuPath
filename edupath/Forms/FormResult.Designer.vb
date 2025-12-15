@@ -29,6 +29,7 @@ Partial Class FormResult
         panelButtons = New Panel()
         btnDashboard = New Button()
         btnNewTest = New Button()
+        btnPrint = New Button()
         SuspendLayout()
         ' 
         ' panelAccent
@@ -109,12 +110,27 @@ Partial Class FormResult
         btnNewTest.Text = "Tes Baru"
         btnNewTest.UseVisualStyleBackColor = False
         ' 
+        ' btnPrint
+        ' 
+        btnPrint.BackColor = Color.FromArgb(CByte(46), CByte(204), CByte(113))
+        btnPrint.FlatAppearance.BorderSize = 0
+        btnPrint.FlatStyle = FlatStyle.Flat
+        btnPrint.Font = New Font("Segoe UI", 11.0F, FontStyle.Bold)
+        btnPrint.ForeColor = Color.White
+        btnPrint.Location = New Point(420, 510)
+        btnPrint.Name = "btnPrint"
+        btnPrint.Size = New Size(150, 45)
+        btnPrint.TabIndex = 7
+        btnPrint.Text = "Cetak Hasil"
+        btnPrint.UseVisualStyleBackColor = False
+        ' 
         ' FormResult
         ' 
         AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(800, 600)
+        Controls.Add(btnPrint)
         Controls.Add(btnNewTest)
         Controls.Add(btnDashboard)
         Controls.Add(panelResults)
@@ -137,4 +153,5 @@ Partial Class FormResult
     Friend WithEvents panelButtons As Panel
     Friend WithEvents btnDashboard As Button
     Friend WithEvents btnNewTest As Button
+    Friend WithEvents btnPrint As Button
 End Class

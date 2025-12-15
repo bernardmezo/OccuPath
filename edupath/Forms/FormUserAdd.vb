@@ -5,20 +5,10 @@ Imports MySql.Data.MySqlClient
 ''' </summary>
 Public Class FormUserAdd
     Private Sub FormUserAdd_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' Setup Prodi ComboBox
-        cmbProdi.Items.Clear()
-        cmbProdi.Items.AddRange(New String() {"TI", "TMD", "TMJ"})
-        cmbProdi.SelectedIndex = 0
-
         ' Setup Role ComboBox
         cmbRole.Items.Clear()
         cmbRole.Items.AddRange(New String() {"student", "admin"})
         cmbRole.SelectedIndex = 0
-
-        ' Setup Semester NumericUpDown
-        nudSemester.Minimum = 1
-        nudSemester.Maximum = 14
-        nudSemester.Value = 1
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
@@ -70,17 +60,14 @@ Public Class FormUserAdd
                 End Using
 
                 ' Insert new user
-                Dim sql = "INSERT INTO users (username, password, full_name, email, nim, prodi, semester, role) " &
-                          "VALUES (@username, @password, @fullName, @email, @nim, @prodi, @semester, @role)"
+                Dim sql = "INSERT INTO users (username, password, full_name, email, role) " &
+                          "VALUES (@username, @password, @fullName, @email, @role)"
 
                 Using cmd As New MySqlCommand(sql, conn)
                     cmd.Parameters.AddWithValue("@username", txtUsername.Text.Trim())
                     cmd.Parameters.AddWithValue("@password", DatabaseConnection.HashPassword(txtPassword.Text))
                     cmd.Parameters.AddWithValue("@fullName", txtFullName.Text.Trim())
                     cmd.Parameters.AddWithValue("@email", If(String.IsNullOrWhiteSpace(txtEmail.Text), DBNull.Value, txtEmail.Text.Trim()))
-                    cmd.Parameters.AddWithValue("@nim", If(String.IsNullOrWhiteSpace(txtNIM.Text), DBNull.Value, txtNIM.Text.Trim()))
-                    cmd.Parameters.AddWithValue("@prodi", cmbProdi.SelectedItem.ToString())
-                    cmd.Parameters.AddWithValue("@semester", nudSemester.Value)
                     cmd.Parameters.AddWithValue("@role", cmbRole.SelectedItem.ToString())
 
                     cmd.ExecuteNonQuery()

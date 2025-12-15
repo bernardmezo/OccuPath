@@ -24,7 +24,7 @@ Public Class FormProfile
                 conn.Open()
 
                 ' Load user data from users table
-                Dim sqlUser = "SELECT username, full_name, email, nim, prodi, semester, created_at FROM users WHERE id = @userId"
+                Dim sqlUser = "SELECT username, full_name, email, created_at FROM users WHERE id = @userId"
                 Using cmd As New MySqlCommand(sqlUser, conn)
                     cmd.Parameters.AddWithValue("@userId", _userId)
                     Using reader = cmd.ExecuteReader()
